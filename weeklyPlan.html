@@ -519,8 +519,59 @@
   }
 
   @media (max-width: 600px) {
-    .page { padding: 32px 20px; }
-    .page-title { font-size: 24px; }
+    .main-wrap { padding: 60px 8px 60px; }
+    .page { padding: 20px 14px; border-radius: 4px; }
+    .page-title { font-size: 22px; }
+
+    /* meta: 세로로 */
+    .page-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    /* week nav: 위 라벨 / 아래 버튼 */
+    .week-nav {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .nav-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      width: 100%;
+    }
+    .nav-group select.nav-btn.week-picker {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+
+    /* 테이블: 날짜 열 좁게 */
+    .daily-table th,
+    .daily-table td { padding: 0; }
+    .day-col { width: 56px; min-width: 56px; }
+    .day-tag { padding: 8px 6px; font-size: 12px; gap: 4px; }
+    .daily-table colgroup col:nth-child(2) { width: 32px; }
+    .daily-table td:nth-child(2) {
+      padding: 8px 4px;
+      font-size: 12px;
+    }
+    .task-list { padding: 6px 8px; }
+    .task-text { font-size: 13px; }
+    .add-task-btn { padding: 3px 8px 8px; font-size: 12px; }
+
+    /* 버튼 행: 2열 그리드 */
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 20px;
+      justify-content: initial;
+    }
+    .btn { font-size: 13px; padding: 8px 10px; justify-content: center; }
   }
 
   /* ─── Print ──────────────────────────────────────────── */

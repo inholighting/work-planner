@@ -538,6 +538,116 @@
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
+  /* ── Mobile ── */
+  .sidebar-toggle, .sidebar-overlay { display: none; }
+
+  @media (max-width: 880px) {
+    .app-layout { display: block; }
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      width: 270px;
+      max-width: 82vw;
+      z-index: 50;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      box-shadow: 2px 0 16px rgba(0,0,0,.15);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,15,15,.35);
+      z-index: 40;
+    }
+    .sidebar-overlay.show { display: block; }
+    .sidebar-toggle {
+      display: flex;
+      position: fixed;
+      top: 14px; left: 14px;
+      z-index: 45;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: var(--font);
+      color: var(--text);
+      box-shadow: 0 1px 6px rgba(0,0,0,.1);
+    }
+    .main-wrap { padding-top: 68px; }
+  }
+
+  @media (max-width: 600px) {
+    .main-wrap { padding: 60px 8px 60px; }
+    .page { padding: 20px 14px; }
+    .page-title { font-size: 22px; }
+
+    /* meta: 세로 */
+    .page-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    /* SNS 바: 세로 */
+    .sns-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .sns-tag { white-space: normal; }
+
+    /* date nav */
+    .date-nav {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .nav-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      width: 100%;
+    }
+    .nav-group input[type="date"].nav-btn {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+
+    /* 테이블 3열 → 2열 (비고 숨김) */
+    .table-row {
+      grid-template-columns: 90px 1fr;
+    }
+    .table-row .table-cell:last-child {
+      display: none;
+    }
+    .table-row.header-row .table-cell:last-child {
+      display: none;
+    }
+    .table-cell { padding: 8px 10px; }
+    .cell-label { font-size: 12px; }
+    .cell-input { font-size: 13px; }
+
+    /* 버튼 행 */
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 20px;
+      justify-content: initial;
+    }
+    .btn { font-size: 13px; padding: 8px 10px; justify-content: center; }
+  }
+
   /* ── Print ── */
   @media print {
     .sidebar, .date-nav .nav-group, .btn-row {
@@ -564,8 +674,12 @@
 <body>
 <div class="app-layout">
 
+<!-- Mobile sidebar toggle -->
+<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰ 팀 목록</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
 <!-- ════════════ SIDEBAR (2-depth: 팀 ▸ 구성원) ════════════ -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <span class="sidebar-title">팀 / 구성원</span>
     <button class="sidebar-add-team" onclick="addTeam()">+ 팀 추가</button>
@@ -961,12 +1075,13 @@ async function removeMember(teamId, personId) {
 }
 
 async function selectPerson(personId, skipSave) {
-  if (personId === selectedPersonId) return;
+  if (personId === selectedPersonId) { closeSidebarMobile(); return; }
   if (!skipSave) await saveCurrentState(true);
   selectedPersonId = personId;
   storeSet(SELECTED_KEY, personId || '');
   renderSidebar();
   await loadPersonDate();
+  closeSidebarMobile();
 }
 
 function updateBreadcrumb() {
@@ -1158,6 +1273,18 @@ async function printPlan() {
   document.title = label.replace(/\s+/g, '_');
   window.print();
   setTimeout(() => { document.title = prevTitle; }, 500);
+}
+
+// ── Mobile sidebar toggle ──
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebarMobile() {
+  if (window.innerWidth <= 880) {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+  }
 }
 
 function showToast(msg, isError = false) {
