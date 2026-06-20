@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>업무 / 연구 일지 — BMD팀</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --sidebar-bg: #f7f7f5;
+    --border: #e8e8e5;
+    --text: #37352f;
+    --text-muted: #9b9a97;
+    --text-light: #b7b6b3;
+    --accent: #2f80ed;
+    --accent-hover: #1a6fd4;
+    --tag-bg: #e8f0fe;
+    --tag-text: #2f80ed;
+    --row-hover: #f7f7f5;
+    --danger: #eb5757;
+    --success: #0f7b6c;
+    --font: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: #f7f6f3;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Layout ── */
+  .app-layout {
+    display: flex;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  .main-wrap {
+    flex: 1;
+    min-width: 0;
+    padding: 40px 20px 80px;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--bg);
+    border-radius: 4px;
+    padding: 60px 72px;
+    box-shadow: rgba(15,15,15,.05) 0px 0px 0px 1px, rgba(15,15,15,.1) 0px 3px 6px;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 14px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .sidebar-add-team {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-family: var(--font);
+    padding: 3px 7px;
+    border-radius: 4px;
+    transition: background 0.1s, color 0.1s;
+  }
+  .sidebar-add-team:hover { background: rgba(0,0,0,0.06); color: var(--text); }
+
+  .sidebar-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 6px 12px;
+  }
+
+  .team-group { margin-bottom: 2px; }
+
+  .team-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 6px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .team-row:hover { background: rgba(0,0,0,0.06); }
+  .team-row:hover .team-action { opacity: 1; }
+  .team-chevron {
+    width: 13px;
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 9px;
+    display: flex;
+    justify-content: center;
+    transition: transform 0.15s;
+  }
+  .team-group.collapsed .team-chevron { transform: rotate(-90deg); }
+  .team-dot { width: 6px; height: 6px; border-radius: 2px; background: var(--text-light); flex-shrink: 0; }
+  .team-name-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .team-action {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--text-light);
+    font-size: 12px;
+    padding: 2px 5px;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+  }
+  .team-action:hover { color: var(--danger); }
+
+  .member-list { list-style: none; overflow: hidden; }
+  .team-group.collapsed .member-list,
+  .team-group.collapsed .add-person-btn { display: none; }
+
+  .person-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 6px 6px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .person-row:hover { background: rgba(0,0,0,0.06); }
+  .person-row:hover .person-action { opacity: 1; }
+  .person-row.active { background: var(--tag-bg); }
+  .person-row.active .person-name-input { color: var(--accent); font-weight: 600; }
+  .person-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--text-light);
+    flex-shrink: 0;
+  }
+  .person-row.active .person-dot { background: var(--accent); }
+  .person-name-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: var(--font);
+    font-size: 13px;
+    color: var(--text);
+  }
+  .person-action {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--text-light);
+    font-size: 11px;
+    padding: 2px 5px;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+  }
+  .person-action:hover { color: var(--danger); }
+
+  .add-person-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 5px 6px 8px 25px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--text-light);
+    font-size: 12px;
+    font-family: var(--font);
+    transition: color 0.15s;
+  }
+  .add-person-btn:hover { color: var(--text-muted); }
+
+  .sidebar-empty {
+    padding: 10px 8px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+
+  /* ── Buttons (bottom action row, like WeeklyPlan) ── */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 32px;
+    justify-content: flex-end;
+  }
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: var(--font);
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.15s;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary {
+    background: #f0efee;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: #e3e2df; }
+
+  /* Date navigator (top-right of content, like WeeklyPlan's week-nav) */
+  .date-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .date-nav-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .date-nav-label .today-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    vertical-align: middle;
+  }
+  .nav-group { display: flex; gap: 6px; }
+  .nav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: var(--font);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.12s;
+  }
+  .nav-btn:hover { background: var(--row-hover); }
+  .date-picker {
+    color: var(--text);
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+  .date-picker::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+  }
+
+  .page-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .page-emoji { font-size: 36px; }
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--font);
+    width: 100%;
+    padding: 2px 0;
+  }
+
+  /* Meta row — unified with WeeklyPlan's 소속 / 담당자 design */
+  .page-meta {
+    display: grid;
+    grid-template-columns: 230px 230px 1fr;
+    column-gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-muted);
+    min-width: 0;
+  }
+
+  .meta-label { font-weight: 500; color: var(--text); min-width: 60px; flex-shrink: 0; }
+
+  .meta-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: var(--text);
+    font-family: var(--font);
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 1px;
+    min-width: 120px;
+  }
+  .meta-input:focus { border-bottom-color: var(--accent); }
+
+  .meta-text {
+    font-size: 14px;
+    color: var(--text);
+    padding-bottom: 1px;
+  }
+
+  /* SNS 현황 — same 3-column grid as page-meta, so the two rows line up */
+  .sns-bar {
+    display: grid;
+    grid-template-columns: 230px 230px 1fr;
+    column-gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .sns-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 500;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .sns-tag.youtube { background: #fff0f0; color: #c0392b; }
+  .sns-tag.instagram { background: #fff4f9; color: #c2185b; }
+  .sns-tag.blog { background: #f0f4ff; color: #3a57e8; }
+
+  .sns-tag input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 12.5px;
+    font-family: var(--font);
+    color: inherit;
+    width: 100%;
+    min-width: 30px;
+    font-weight: 600;
+  }
+
+  /* ── Table ── */
+  .section-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+    margin-top: 28px;
+  }
+
+  .journal-table {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .table-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 140px;
+    border-bottom: 1px solid #dadad6;
+    min-height: 44px;
+    transition: background 0.1s;
+  }
+  .table-row:last-child { border-bottom: none; }
+  .table-row:hover { background: var(--row-hover); }
+
+  .table-row.header-row {
+    background: var(--sidebar-bg);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+  .table-row.header-row:hover { background: var(--sidebar-bg); }
+
+  .table-cell {
+    padding: 10px 14px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+  }
+  .table-cell:last-child { border-right: none; }
+
+  /* 구분 column (label cells) — same background as the header row, centered */
+  .table-cell:first-child {
+    background: var(--sidebar-bg);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .cell-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    padding-top: 1px;
+  }
+
+  .cell-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font);
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.6;
+    resize: none;
+    min-height: 24px;
+    padding: 0;
+  }
+
+  .cell-input::placeholder { color: var(--text-light); }
+
+  .cell-input-small {
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+
+  /* ── Notice bar ── */
+  .notice-bar {
+    margin-top: 28px;
+    padding: 12px 16px;
+    background: #fffbf0;
+    border: 1px solid #f0e0a0;
+    border-radius: 8px;
+    font-size: 12.5px;
+    color: #7a6000;
+    line-height: 1.7;
+  }
+
+  .notice-bar strong { font-weight: 600; }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+  /* Checklist items in cell */
+  .checklist { list-style: none; padding: 0; }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 2px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+  .check-item input[type="checkbox"] {
+    margin-top: 3px; flex-shrink: 0;
+    width: 14px; height: 14px;
+    cursor: pointer;
+    accent-color: var(--accent);
+  }
+  .check-item span { flex: 1; }
+  .check-item span.done { text-decoration: line-through; color: var(--text-muted); }
+
+  /* Tag in 비고 */
+  .stat-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    margin: 2px 2px 2px 0;
+    white-space: nowrap;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+  .empty-state .big-emoji { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 15px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── Print ── */
+  @media print {
+    .sidebar, .date-nav .nav-group, .btn-row {
+      display: none !important;
+    }
+    body { background: #fff; }
+    .app-layout { display: block; }
+    .main-wrap { padding: 0; }
+    .page { max-width: 100%; box-shadow: none; border-radius: 0; padding: 16px 8px; margin: 0; }
+    .journal-table { border: 1px solid #ccc; }
+    .table-row { border-bottom: 1px solid #ccc !important; break-inside: avoid; }
+    .table-cell { border-right: 1px solid #ccc !important; }
+
+    /* keep SNS tags aligned with the meta row in print too */
+    .page-meta, .sns-bar { grid-template-columns: repeat(3, 1fr); column-gap: 8px; }
+    .sns-tag {
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+    .sns-tag input { min-width: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="app-layout">
+
+<!-- ════════════ SIDEBAR (2-depth: 팀 ▸ 구성원) ════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-title">팀 / 구성원</span>
+    <button class="sidebar-add-team" onclick="addTeam()">+ 팀 추가</button>
+  </div>
+  <div class="sidebar-items">
+    <div id="sidebarTree"></div>
+  </div>
+</aside>
+
+<!-- ════════════ MAIN ════════════ -->
+<div class="main-wrap">
+  <div class="page">
+
+    <!-- Date Navigator -->
+    <div class="date-nav">
+      <div class="date-nav-label" id="dateNavLabel">—</div>
+      <div class="nav-group">
+        <button class="nav-btn" onclick="changeDate(-1)">← 이전</button>
+        <input type="date" class="nav-btn date-picker" id="dateNavPicker" onchange="jumpToDate(this.value)">
+        <button class="nav-btn" onclick="goToToday()">오늘</button>
+        <button class="nav-btn" onclick="changeDate(1)">다음 →</button>
+      </div>
+    </div>
+
+    <div id="entryContent">
+      <div class="empty-state">
+        <div class="big-emoji">📄</div>
+        <p>왼쪽에서 팀과 구성원을 선택하세요.</p>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="clearCurrent()">🗑 초기화</button>
+      <button class="btn btn-secondary" onclick="printPlan()">🖨 인쇄</button>
+      <button class="btn btn-primary" onclick="saveEntry()">💾 저장</button>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ══════════════════════════════════════
+//  Constants
+// ══════════════════════════════════════
+const DAY_KO = ['일','월','화','수','목','금','토'];
+
+const DEFAULT_TEAMS = [
+  { id: 't1', name: 'BMD팀', members: [
+      { id: 'p1', name: '임수연PD' }
+  ]},
+  { id: 't2', name: '기술팀', members: [
+
+  ]}
+];
+
+// Sample journal content seeded once, for BMD팀 · 임수연PD on 2026-06-19
+const DEMO_PERSON_ID = 'p1';
+const DEMO_DATE_ID = '260619';
+const DEMO_DATA = {
+  manager: '임수연PD',
+  yt: '20,526', yt_sub: '215',
+  ig: '5,519',  ig_sub: '829',
+  blog: '',     blog_sub: '',
+  directive: '차주 카드뉴스 : 한국 수자원공사 K-Water 수련원\n명함 디자인\n네이버 플레이스 등록',
+  directive_note: '',
+  tasks: '【업무회의】\n1. 전원속의 내집 카드뉴스로(화요일 발행)\n2. 전문성을 매출로 연결하기 → 카드뉴스 해시태그에 두꺼비프로젝트, 헌집을새집으로 두개 추가하기\n3. 셀인카페 활동을 우선순위로\n\n- YT-S4-001 롱폼 편집 → 진행률 : 10%\n- 회사 도메인 이메일 생성(네이버 웍스) 및 호스팅 변경 완료\n- 영상 055-5 유튜브, 인스타그램 업로드\n- 홈페이지 전원속의 내집 업로드\n- 홈페이지 안심번호 수정, 로고 수정\n- 블로그 로고 수정',
+  tasks_note: '',
+  tomorrow: '- YT-S4-001 롱폼 편집',
+  tomorrow_note: '',
+  pending: '',
+  pending_note: '',
+};
+
+const TEAMS_KEY = 'dp_teams_v1';
+const SELECTED_KEY = 'dp_selected_v1';
+function entryKey(personId, dateId) { return `dp_entry_${personId}_${dateId}`; }
+
+// ══════════════════════════════════════
+//  State
+// ══════════════════════════════════════
+let TEAMS = [];
+let selectedPersonId = null;
+let currentDayOffset = 0; // relative to today
+const collapsedTeams = new Set();
+
+// ══════════════════════════════════════
+//  Storage helpers (Firebase Firestore)
+// ══════════════════════════════════════
+const _firebaseConfig = {
+  apiKey: "AIzaSyC4sYx0-60NVCK2MI9z8cKpKUry4R_bLgM",
+  authDomain: "work-planner-62897.firebaseapp.com",
+  projectId: "work-planner-62897",
+  storageBucket: "work-planner-62897.firebasestorage.app",
+  messagingSenderId: "199105250426",
+  appId: "1:199105250426:web:6cf9f54c659cf5950a67c3"
+};
+let _db = null;
+function getDb() {
+  if (_db) return _db;
+  if (!firebase.apps.length) firebase.initializeApp(_firebaseConfig);
+  _db = firebase.firestore();
+  return _db;
+}
+const FS_COL = 'dp_store';
+
+async function storeGet(key) {
+  try { const snap = await getDb().collection(FS_COL).doc(key).get(); return snap.exists ? snap.data().v : null; }
+  catch(e) { return null; }
+}
+async function storeSet(key, value) {
+  try { await getDb().collection(FS_COL).doc(key).set({ v: value }); return true; }
+  catch(e) { console.error(e); return false; }
+}
+async function storeDelete(key) {
+  try { await getDb().collection(FS_COL).doc(key).delete(); } catch(e) {}
+}
+async function storeList(prefix) {
+  try {
+    const snap = await getDb().collection(FS_COL)
+      .where(firebase.firestore.FieldPath.documentId(), '>=', prefix)
+      .where(firebase.firestore.FieldPath.documentId(), '<', prefix + '\uf8ff')
+      .get();
+    return snap.docs.map(d => d.id);
+  } catch(e) { return []; }
+}
+
+function uid(prefix) { return prefix + '_' + Math.random().toString(36).slice(2, 9); }
+function escapeAttr(str) { return String(str ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;'); }
+function esc(s='') { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function findPerson(personId) {
+  for (const team of TEAMS) {
+    const m = team.members.find(m => m.id === personId);
+    if (m) return { team, person: m };
+  }
+  return null;
+}
+
+// ══════════════════════════════════════
+//  Date helpers
+// ══════════════════════════════════════
+function dateForOffset(offset) {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + offset);
+  return d;
+}
+function dateId(d) {
+  const y = String(d.getFullYear()).slice(2);
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}${m}${day}`;
+}
+function dateDisplay(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}.${m}.${day} (${DAY_KO[d.getDay()]})`;
+}
+// yyyy-mm-dd (local) for <input type="date"> value
+function toInputValue(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+// integer day-count between two midnight Date objects (DST-safe)
+function dayDiff(a, b) {
+  const utcA = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+  const utcB = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+  return Math.round((utcB - utcA) / 86400000);
+}
+
+function renderDateNav() {
+  const d = dateForOffset(currentDayOffset);
+  const badge = currentDayOffset === 0 ? '<span class="today-badge">오늘</span>' : '';
+  document.getElementById('dateNavLabel').innerHTML = dateDisplay(d) + badge;
+  const picker = document.getElementById('dateNavPicker');
+  if (picker) picker.value = toInputValue(d);
+}
+
+async function changeDate(dir) {
+  await saveCurrentState(true);
+  currentDayOffset += dir;
+  renderDateNav();
+  await loadPersonDate();
+}
+
+async function jumpToDate(value) {
+  if (!value) return; // empty/cleared input — ignore
+  const [y, m, day] = value.split('-').map(Number);
+  const target = new Date(y, m - 1, day);
+  target.setHours(0,0,0,0);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  await saveCurrentState(true);
+  currentDayOffset = dayDiff(today, target);
+  renderDateNav();
+  await loadPersonDate();
+}
+
+async function goToToday() {
+  if (currentDayOffset === 0) return;
+  await saveCurrentState(true);
+  currentDayOffset = 0;
+  renderDateNav();
+  await loadPersonDate();
+}
+
+// ══════════════════════════════════════
+//  Teams / sidebar persistence
+// ══════════════════════════════════════
+async function loadTeams() {
+  const raw = await storeGet(TEAMS_KEY);
+  if (raw) { try { return JSON.parse(raw); } catch(e) {} }
+  return JSON.parse(JSON.stringify(DEFAULT_TEAMS));
+}
+function persistTeams() { storeSet(TEAMS_KEY, JSON.stringify(TEAMS)); }
+
+async function seedDemoIfNeeded() {
+  if (!findPerson(DEMO_PERSON_ID)) return;
+  const existing = await storeGet(entryKey(DEMO_PERSON_ID, DEMO_DATE_ID));
+  if (!existing) await storeSet(entryKey(DEMO_PERSON_ID, DEMO_DATE_ID), JSON.stringify(DEMO_DATA));
+}
+
+async function cleanupPersonEntries(personId) {
+  const keys = await storeList(`dp_entry_${personId}_`);
+  for (const k of keys) { await storeDelete(k); }
+}
+
+// ══════════════════════════════════════
+//  Sidebar (teams / members, 2-depth)
+// ══════════════════════════════════════
+function renderSidebar() {
+  const tree = document.getElementById('sidebarTree');
+  tree.innerHTML = '';
+
+  if (TEAMS.length === 0) {
+    tree.innerHTML = '<div class="sidebar-empty">팀이 없습니다. "+ 팀 추가"로 시작하세요.</div>';
+    return;
+  }
+
+  TEAMS.forEach(team => {
+    const group = document.createElement('div');
+    group.className = 'team-group' + (collapsedTeams.has(team.id) ? ' collapsed' : '');
+
+    const row = document.createElement('div');
+    row.className = 'team-row';
+    row.dataset.teamId = team.id;
+    row.innerHTML = `
+      <span class="team-chevron">▾</span>
+      <span class="team-dot"></span>
+      <input class="team-name-input" value="${escapeAttr(team.name)}" />
+      <button class="team-action" title="팀 삭제">✕</button>
+    `;
+    const nameInput = row.querySelector('.team-name-input');
+    const removeBtn = row.querySelector('.team-action');
+
+    row.addEventListener('click', () => toggleTeam(team.id));
+    nameInput.addEventListener('click', (e) => e.stopPropagation());
+    nameInput.addEventListener('input', () => {
+      team.name = nameInput.value;
+      persistTeams();
+      if (team.members.some(m => m.id === selectedPersonId)) updateBreadcrumb();
+      const teamEl = document.getElementById('metaTeam');
+      if (teamEl && team.members.some(m => m.id === selectedPersonId)) teamEl.textContent = team.name;
+    });
+    nameInput.addEventListener('keydown', (e) => {
+      // e.isComposing / keyCode 229: 한글 등 IME 조합 중 Enter는 무시 (마지막 글자 중복 입력 방지)
+      if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); nameInput.blur(); }
+    });
+    removeBtn.addEventListener('click', (e) => { e.stopPropagation(); removeTeam(team.id); });
+
+    group.appendChild(row);
+
+    const list = document.createElement('ul');
+    list.className = 'member-list';
+    team.members.forEach(person => {
+      const li = document.createElement('li');
+      const pRow = document.createElement('div');
+      pRow.className = 'person-row' + (person.id === selectedPersonId ? ' active' : '');
+      pRow.dataset.personId = person.id;
+      pRow.innerHTML = `
+        <span class="person-dot"></span>
+        <input class="person-name-input" value="${escapeAttr(person.name)}" />
+        <button class="person-action" title="구성원 삭제">✕</button>
+      `;
+      const pInput = pRow.querySelector('.person-name-input');
+      const pRemove = pRow.querySelector('.person-action');
+
+      pRow.addEventListener('click', () => selectPerson(person.id));
+      pInput.addEventListener('click', (e) => { e.stopPropagation(); selectPerson(person.id); });
+      pInput.addEventListener('input', () => {
+        person.name = pInput.value;
+        persistTeams();
+        if (person.id === selectedPersonId) {
+          updateBreadcrumb();
+          const managerEl = document.getElementById('metaManager');
+          if (managerEl) managerEl.textContent = person.name;
+        }
+      });
+      pInput.addEventListener('keydown', (e) => {
+        // e.isComposing / keyCode 229: 한글 등 IME 조합 중 Enter는 무시 (마지막 글자 중복 입력 방지)
+        if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); pInput.blur(); }
+      });
+      pRemove.addEventListener('click', (e) => { e.stopPropagation(); removeMember(team.id, person.id); });
+
+      li.appendChild(pRow);
+      list.appendChild(li);
+    });
+    group.appendChild(list);
+
+    const addPersonBtn = document.createElement('button');
+    addPersonBtn.className = 'add-person-btn';
+    addPersonBtn.textContent = '+ 구성원 추가';
+    addPersonBtn.addEventListener('click', (e) => { e.stopPropagation(); addMember(team.id); });
+    group.appendChild(addPersonBtn);
+
+    tree.appendChild(group);
+  });
+}
+
+function toggleTeam(teamId) {
+  if (collapsedTeams.has(teamId)) collapsedTeams.delete(teamId);
+  else collapsedTeams.add(teamId);
+  renderSidebar();
+}
+
+function addTeam() {
+  const team = { id: uid('t'), name: '새 팀', members: [] };
+  TEAMS.push(team);
+  persistTeams();
+  renderSidebar();
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`.team-row[data-team-id="${team.id}"] .team-name-input`);
+    if (el) { el.focus(); el.select(); }
+  });
+}
+
+async function removeTeam(teamId) {
+  const team = TEAMS.find(t => t.id === teamId);
+  if (!team) return;
+  if (!confirm(`'${team.name}' 팀을 삭제할까요? 구성원과 저장된 일지도 함께 제거됩니다.`)) return;
+
+  for (const m of team.members) { await cleanupPersonEntries(m.id); }
+  TEAMS = TEAMS.filter(t => t.id !== teamId);
+  persistTeams();
+
+  if (team.members.some(m => m.id === selectedPersonId)) {
+    selectedPersonId = TEAMS[0]?.members[0]?.id ?? null;
+    storeSet(SELECTED_KEY, selectedPersonId || '');
+    await loadPersonDate();
+  }
+  renderSidebar();
+}
+
+function addMember(teamId) {
+  const team = TEAMS.find(t => t.id === teamId);
+  if (!team) return;
+  const person = { id: uid('p'), name: '새 구성원' };
+  team.members.push(person);
+  persistTeams();
+  selectPerson(person.id, true);
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`.person-row[data-person-id="${person.id}"] .person-name-input`);
+    if (el) { el.focus(); el.select(); }
+  });
+}
+
+async function removeMember(teamId, personId) {
+  const team = TEAMS.find(t => t.id === teamId);
+  if (!team) return;
+  if (!confirm('이 구성원을 삭제할까요? 저장된 일지도 함께 제거됩니다.')) return;
+
+  team.members = team.members.filter(m => m.id !== personId);
+  persistTeams();
+  await cleanupPersonEntries(personId);
+
+  if (selectedPersonId === personId) {
+    selectedPersonId = team.members[0]?.id ?? TEAMS.flatMap(t => t.members)[0]?.id ?? null;
+    storeSet(SELECTED_KEY, selectedPersonId || '');
+    await loadPersonDate();
+  }
+  renderSidebar();
+}
+
+async function selectPerson(personId, skipSave) {
+  if (personId === selectedPersonId) return;
+  if (!skipSave) await saveCurrentState(true);
+  selectedPersonId = personId;
+  storeSet(SELECTED_KEY, personId || '');
+  renderSidebar();
+  await loadPersonDate();
+}
+
+function updateBreadcrumb() {
+  const found = findPerson(selectedPersonId);
+  const el = document.getElementById('topPerson');
+  if (el) el.textContent = found ? `${found.team.name} · ${found.person.name}` : '—';
+}
+
+// ══════════════════════════════════════
+//  Load / render entry for selected person + date
+// ══════════════════════════════════════
+async function loadPersonDate() {
+  updateBreadcrumb();
+  const found = findPerson(selectedPersonId);
+  if (!found) {
+    document.getElementById('entryContent').innerHTML = `
+      <div class="empty-state">
+        <div class="big-emoji">📄</div>
+        <p>왼쪽에서 팀과 구성원을 선택하세요.</p>
+      </div>`;
+    return;
+  }
+
+  const d = dateForOffset(currentDayOffset);
+  const id = dateId(d);
+  let data = null;
+  const raw = await storeGet(entryKey(selectedPersonId, id));
+  if (raw) { try { data = JSON.parse(raw); } catch(e) {} }
+
+  renderEntryPage(found, d, data);
+}
+
+function renderEntryPage(found, dateObj, data) {
+  const d = data || {};
+  const manager = found.person.name;
+  const teamLabel = found.team.name;
+
+  document.getElementById('entryContent').innerHTML = `
+    <div class="page-title-row">
+      <span class="page-emoji">📋</span>
+      <input class="page-title" id="f_title" value="업무 / 연구 일지" placeholder="제목">
+    </div>
+
+    <div class="page-meta">
+      <div class="meta-item">
+        <span class="meta-label">날짜</span>
+        <span class="meta-text">${dateDisplay(dateObj)}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">팀</span>
+        <span class="meta-text" id="metaTeam">${esc(teamLabel)}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">담당자</span>
+        <span class="meta-text" id="metaManager">${esc(manager)}</span>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SNS 현황 -->
+    <div class="section-label">SNS 현황 (팔로워 / 최근 영상 시청자수)</div>
+    <div class="sns-bar">
+      <div class="sns-tag youtube">
+        ▶ YouTube &nbsp;
+        <input id="f_yt" value="${esc(d.yt)}" placeholder="0" title="팔로워">
+        <span style="color:rgba(0,0,0,.3)"> / </span>
+        <input id="f_yt_sub" value="${esc(d.yt_sub)}" placeholder="0" title="최근 시청자수">
+      </div>
+      <div class="sns-tag instagram">
+        📷 Instagram &nbsp;
+        <input id="f_ig" value="${esc(d.ig)}" placeholder="0">
+        <span style="color:rgba(0,0,0,.3)"> / </span>
+        <input id="f_ig_sub" value="${esc(d.ig_sub)}" placeholder="0">
+      </div>
+      <div class="sns-tag blog">
+        ✏️ Blog &nbsp;
+        <input id="f_blog" value="${esc(d.blog)}" placeholder="0">
+        <span style="color:rgba(0,0,0,.3)"> / </span>
+        <input id="f_blog_sub" value="${esc(d.blog_sub)}" placeholder="0">
+      </div>
+    </div>
+
+    <!-- 본문 테이블 -->
+    <div class="section-label">일지</div>
+    <div class="journal-table">
+      <!-- 헤더 -->
+      <div class="table-row header-row">
+        <div class="table-cell" style="font-size:11px">구 분</div>
+        <div class="table-cell" style="font-size:11px; justify-content:center; align-items:center; text-align:center">내 용</div>
+        <div class="table-cell" style="font-size:11px; justify-content:center; align-items:center; text-align:center">비 고</div>
+      </div>
+
+      <!-- 교수님 지시사항 -->
+      <div class="table-row">
+        <div class="table-cell"><span class="cell-label">교수님<br>지시사항</span></div>
+        <div class="table-cell"><textarea class="cell-input" id="f_directive" rows="3" placeholder="지시사항을 입력하세요...">${esc(d.directive)}</textarea></div>
+        <div class="table-cell"><textarea class="cell-input cell-input-small" id="f_directive_note" rows="3" placeholder="비고...">${esc(d.directive_note)}</textarea></div>
+      </div>
+
+      <!-- 금일 진행 업무 -->
+      <div class="table-row">
+        <div class="table-cell"><span class="cell-label">금일<br>진행 업무</span></div>
+        <div class="table-cell"><textarea class="cell-input" id="f_tasks" rows="8" placeholder="오늘 진행한 업무를 입력하세요...">${esc(d.tasks)}</textarea></div>
+        <div class="table-cell"><textarea class="cell-input cell-input-small" id="f_tasks_note" rows="8" placeholder="비고...">${esc(d.tasks_note)}</textarea></div>
+      </div>
+
+      <!-- 익일 업무 -->
+      <div class="table-row">
+        <div class="table-cell"><span class="cell-label">익일 업무</span></div>
+        <div class="table-cell"><textarea class="cell-input" id="f_tomorrow" rows="3" placeholder="내일 예정된 업무...">${esc(d.tomorrow)}</textarea></div>
+        <div class="table-cell"><textarea class="cell-input cell-input-small" id="f_tomorrow_note" rows="3" placeholder="비고...">${esc(d.tomorrow_note)}</textarea></div>
+      </div>
+
+      <!-- 미진행 업무 -->
+      <div class="table-row">
+        <div class="table-cell"><span class="cell-label">미진행<br>업무</span></div>
+        <div class="table-cell"><textarea class="cell-input" id="f_pending" rows="2" placeholder="미처 진행하지 못한 업무...">${esc(d.pending)}</textarea></div>
+        <div class="table-cell"><textarea class="cell-input cell-input-small" id="f_pending_note" rows="2" placeholder="비고...">${esc(d.pending_note)}</textarea></div>
+      </div>
+    </div>
+
+    <!-- 공지 -->
+    <div class="notice-bar">
+      📢 <strong>공유 안내</strong> &nbsp;|&nbsp; 일지 <strong>18시</strong> 연구소 단톡방 공유 &nbsp;·&nbsp; 주간일정 매주 <strong>금요일 14시</strong>까지 공유 &nbsp;·&nbsp; 매주 <strong>월요일</strong> 일지 점검<br>
+      📌 <strong>필수 입력사항</strong> : 회의내용 · 제품 입출고 내역 · 메일발송 · 고객 클레임
+    </div>
+
+    <hr class="divider">
+    <div style="font-size:12px;color:var(--text-muted);text-align:right">차인호 공간조명연구소</div>
+  `;
+
+  // auto-resize textareas
+  document.querySelectorAll('.cell-input').forEach(ta => {
+    ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = ta.scrollHeight + 'px';
+    });
+    ta.style.height = ta.scrollHeight + 'px';
+  });
+}
+
+// ══════════════════════════════════════
+//  Save / clear / print
+// ══════════════════════════════════════
+async function saveCurrentState(silent) {
+  if (!selectedPersonId) { if (!silent) showToast('선택된 구성원이 없습니다.', true); return; }
+  const anchorEl = document.getElementById('f_yt');
+  if (!anchorEl) return; // nothing rendered to save
+
+  const found = findPerson(selectedPersonId);
+  const g = id => document.getElementById(id)?.value || '';
+  const data = {
+    manager: found ? found.person.name : '',
+    yt: g('f_yt'), yt_sub: g('f_yt_sub'),
+    ig: g('f_ig'), ig_sub: g('f_ig_sub'),
+    blog: g('f_blog'), blog_sub: g('f_blog_sub'),
+    directive: g('f_directive'), directive_note: g('f_directive_note'),
+    tasks: g('f_tasks'), tasks_note: g('f_tasks_note'),
+    tomorrow: g('f_tomorrow'), tomorrow_note: g('f_tomorrow_note'),
+    pending: g('f_pending'), pending_note: g('f_pending_note'),
+  };
+
+  const d = dateForOffset(currentDayOffset);
+  const id = dateId(d);
+  const ok = await storeSet(entryKey(selectedPersonId, id), JSON.stringify(data));
+  if (!silent) {
+    if (ok) showToast('저장되었습니다 ✓'); else showToast('저장 실패', true);
+  }
+}
+
+function saveEntry() { saveCurrentState(false); }
+
+async function clearCurrent() {
+  if (!selectedPersonId) { showToast('선택된 구성원이 없습니다.', true); return; }
+  if (!confirm('현재 화면(이 구성원 · 이 날짜)의 내용을 초기화할까요?')) return;
+  const d = dateForOffset(currentDayOffset);
+  const id = dateId(d);
+  await storeDelete(entryKey(selectedPersonId, id));
+  await loadPersonDate();
+}
+
+async function printPlan() {
+  await saveCurrentState(true);
+  const found = findPerson(selectedPersonId);
+  const d = dateForOffset(currentDayOffset);
+  const label = found ? `${found.team.name}_${found.person.name}_${dateId(d)}` : '업무일지';
+  const prevTitle = document.title;
+  document.title = label.replace(/\s+/g, '_');
+  window.print();
+  setTimeout(() => { document.title = prevTitle; }, 500);
+}
+
+function showToast(msg, isError = false) {
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  Object.assign(toast.style, {
+    position: 'fixed', bottom: '32px', right: '32px',
+    background: isError ? '#eb5757' : '#37352f',
+    color: '#fff', padding: '10px 18px', borderRadius: '6px',
+    fontSize: '14px', zIndex: 9999,
+    boxShadow: '0 4px 12px rgba(0,0,0,.15)',
+    transition: 'opacity 0.3s',
+  });
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 300); }, 2000);
+}
+
+// ══════════════════════════════════════
+//  Init
+// ══════════════════════════════════════
+async function init() {
+  TEAMS = await loadTeams();
+  selectedPersonId = (await storeGet(SELECTED_KEY)) || (TEAMS[0]?.members[0]?.id ?? null);
+  await seedDemoIfNeeded();
+
+  renderSidebar();
+  renderDateNav();
+
+  if (selectedPersonId) {
+    await loadPersonDate();
+  } else {
+    updateBreadcrumb();
+  }
+}
+
+init();
+</script>
+</body>
+</html>

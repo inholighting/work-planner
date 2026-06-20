@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주간 계획 템플릿</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+    background: #f7f6f3;
+    color: #37352f;
+    min-height: 100vh;
+  }
+
+  /* ─── Layout ─────────────────────────────────────────── */
+  .app-layout {
+    display: flex;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  .main-wrap {
+    flex: 1;
+    min-width: 0;
+    padding: 40px 20px 80px;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 4px;
+    padding: 60px 72px;
+    box-shadow: rgba(15,15,15,.05) 0px 0px 0px 1px, rgba(15,15,15,.1) 0px 3px 6px;
+  }
+
+  /* ─── Sidebar ────────────────────────────────────────── */
+  .sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    background: #fbfbfa;
+    border-right: 1px solid #e3e2df;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 20px 10px 24px;
+  }
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 8px 14px;
+  }
+  .sidebar-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9b9a97;
+  }
+  .sidebar-add-team {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #9b9a97;
+    font-size: 12px;
+    font-family: inherit;
+    padding: 3px 7px;
+    border-radius: 4px;
+  }
+  .sidebar-add-team:hover { background: #ecebe8; color: #37352f; }
+
+  .team-group { margin-bottom: 2px; }
+
+  .team-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .team-row:hover { background: #ecebe8; }
+  .team-row:hover .team-action { opacity: 1; }
+  .team-chevron {
+    width: 13px;
+    flex-shrink: 0;
+    color: #9b9a97;
+    font-size: 9px;
+    display: flex;
+    justify-content: center;
+    transition: transform 0.15s;
+  }
+  .team-group.collapsed .team-chevron { transform: rotate(-90deg); }
+  .team-dot { width: 6px; height: 6px; border-radius: 2px; background: #c1bdb7; flex-shrink: 0; }
+  .team-name-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: #37352f;
+  }
+  .team-action {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #c1bdb7;
+    font-size: 12px;
+    padding: 2px 5px;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+  }
+  .team-action:hover { color: #eb5757; }
+
+  .member-list { list-style: none; overflow: hidden; }
+  .team-group.collapsed .member-list,
+  .team-group.collapsed .add-person-btn { display: none; }
+
+  .person-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 6px 6px 25px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .person-row:hover { background: #ecebe8; }
+  .person-row:hover .person-action { opacity: 1; }
+  .person-row.active { background: #e7f3fb; }
+  .person-row.active .person-name-input { color: #0b6e99; font-weight: 600; }
+  .person-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #d3d0c8;
+    flex-shrink: 0;
+  }
+  .person-row.active .person-dot { background: #2eaadc; }
+  .person-name-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    font-size: 13px;
+    color: #37352f;
+  }
+  .person-action {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #c1bdb7;
+    font-size: 11px;
+    padding: 2px 5px;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+  }
+  .person-action:hover { color: #eb5757; }
+
+  .add-person-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 5px 6px 8px 25px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #b9b6ae;
+    font-size: 12px;
+    font-family: inherit;
+    transition: color 0.15s;
+  }
+  .add-person-btn:hover { color: #787774; }
+
+  .sidebar-toggle, .sidebar-overlay { display: none; }
+
+  /* Header */
+  .page-title {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+    border: none;
+    outline: none;
+    width: 100%;
+    background: transparent;
+    color: #37352f;
+    line-height: 1.3;
+  }
+  .page-title::placeholder { color: #c1bdb7; }
+
+  .page-meta {
+    display: grid;
+    grid-template-columns: 230px 230px 1fr;
+    column-gap: 12px;
+    margin-bottom: 28px;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #787774;
+    min-width: 0;
+  }
+  .meta-week-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    background: #e7f3fb;
+    color: #0b6e99;
+  }
+  .meta-label { font-weight: 500; color: #37352f; min-width: 60px; }
+  .meta-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: #37352f;
+    font-family: inherit;
+    border-bottom: 1px dashed #e3e2df;
+    padding-bottom: 1px;
+    min-width: 80px;
+  }
+  .meta-input:focus { border-bottom-color: #2eaadc; }
+  .meta-text {
+    font-size: 14px;
+    color: #37352f;
+    padding-bottom: 1px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #e3e2df;
+    margin: 24px 0;
+  }
+
+  /* Section headers */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9b9a97;
+    margin-bottom: 12px;
+  }
+
+  /* Daily schedule table */
+  .daily-table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+  .daily-table th {
+    background: #f7f6f3;
+    font-size: 12px;
+    font-weight: 600;
+    color: #9b9a97;
+    text-align: center;
+    padding: 8px 12px;
+    border: 1px solid #e3e2df;
+  }
+  .daily-table td {
+    border: 1px solid #e3e2df;
+    vertical-align: middle;
+    padding: 0;
+  }
+  .daily-table tbody tr {
+    transition: background 0.1s;
+  }
+  .daily-table tbody tr:hover {
+    background: #f7f6f3;
+  }
+  .day-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .day-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .day-Mon .day-dot { background: #d9730d; }
+  .day-Tue .day-dot { background: #0f7b6c; }
+  .day-Wed .day-dot { background: #0b6e99; }
+  .day-Thu .day-dot { background: #6940a5; }
+  .day-Fri .day-dot { background: #c14b8a; }
+
+  .day-col { width: 80px; }
+  .tasks-cell {
+    width: 100%;
+  }
+  .task-list {
+    padding: 8px 12px;
+    min-height: 48px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #37352f;
+    cursor: default;
+  }
+  .task-item::before {
+    content: '•';
+    color: #9b9a97;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .task-text {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    color: #37352f;
+    line-height: 1.5;
+    width: 100%;
+    resize: none;
+    overflow: hidden;
+    min-height: 22px;
+  }
+  .task-text::placeholder { color: #c1bdb7; }
+  .task-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #d3d0c8;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+  }
+  .task-item:hover .task-remove { opacity: 1; }
+  .task-remove:hover { color: #eb5757; }
+
+  .add-task-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #c1bdb7;
+    cursor: pointer;
+    padding: 4px 12px 10px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    transition: color 0.15s;
+  }
+  .add-task-btn:hover { color: #787774; }
+
+  /* Instructions box */
+  .instructions-box {
+    background: #f7f6f3;
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    border: 1px solid #e3e2df;
+  }
+  .instructions-box .section-label { margin-bottom: 10px; }
+  .instructions-textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    color: #37352f;
+    line-height: 1.7;
+    resize: none;
+    min-height: 90px;
+    overflow: hidden;
+  }
+  .instructions-textarea::placeholder { color: #c1bdb7; }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 32px;
+    justify-content: flex-end;
+  }
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.15s;
+    border: none;
+  }
+  .btn-primary {
+    background: #2eaadc;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #2499c5; }
+  .btn-secondary {
+    background: #f0efee;
+    color: #37352f;
+    border: 1px solid #e3e2df;
+  }
+  .btn-secondary:hover { background: #e3e2df; }
+
+  /* Week navigator */
+  .week-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+  .week-label {
+    font-size: 14px;
+    color: #787774;
+    font-weight: 500;
+  }
+  .nav-btn {
+    background: none;
+    border: 1px solid #e3e2df;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #787774;
+    font-size: 13px;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.12s;
+  }
+  .nav-btn:hover { background: #f0efee; }
+  .nav-group { display: flex; gap: 6px; }
+  .week-picker {
+    color: #37352f;
+    font-size: 13px;
+    padding: 5px 8px;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e8f5e9;
+    color: #2e7d32;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  @media (max-width: 880px) {
+    .app-layout { display: block; }
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      width: 270px;
+      max-width: 82vw;
+      z-index: 50;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      box-shadow: 2px 0 16px rgba(0,0,0,.15);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,15,15,.35);
+      z-index: 40;
+    }
+    .sidebar-overlay.show { display: block; }
+    .sidebar-toggle {
+      display: flex;
+      position: fixed;
+      top: 14px; left: 14px;
+      z-index: 45;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border: 1px solid #e3e2df;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      color: #37352f;
+      box-shadow: 0 1px 6px rgba(0,0,0,.1);
+    }
+    .main-wrap { padding-top: 68px; }
+  }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 20px; }
+    .page-title { font-size: 24px; }
+  }
+
+  /* ─── Print ──────────────────────────────────────────── */
+  @media print {
+    @page {
+      size: A4 portrait;
+      margin: 12mm 10mm;
+    }
+
+    .sidebar, .sidebar-toggle, .sidebar-overlay,
+    .week-nav .nav-group,
+    .btn-row,
+    .add-task-btn, .task-remove,
+    .team-action, .person-action, .add-person-btn, .sidebar-add-team {
+      display: none !important;
+    }
+
+    html, body {
+      height: 100%;
+      background: #fff;
+    }
+
+    .app-layout {
+      display: block;
+      height: 100%;
+    }
+
+    .main-wrap {
+      padding: 0;
+      height: 100%;
+    }
+
+    .page {
+      max-width: 100%;
+      width: 100%;
+      box-shadow: none;
+      padding: 10px 12px;
+    }
+
+    /* 제목·메타·구분선 고정 영역 */
+    .week-nav { margin-bottom: 10px; }
+    .page-title { font-size: 22px; margin-bottom: 6px; }
+    .page-meta { margin-bottom: 12px; }
+    .divider { margin: 10px 0; }
+
+    /* 업무 테이블 행 높이를 적당히 늘림 */
+    .daily-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 0;
+    }
+
+    /* 각 행의 최소 높이를 고정 */
+    .daily-table tbody tr {
+      height: 90px;
+    }
+
+    .task-list {
+      min-height: 70px;
+    }
+
+    .daily-table td,
+    .daily-table th {
+      border: 1px solid #ccc;
+      vertical-align: middle;
+    }
+
+    .daily-table th {
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: unset;
+    }
+
+    /* 지시사항 박스 높이 고정 */
+    .instructions-box {
+      border: 1px solid #ddd;
+      background: #fff;
+      flex-shrink: 0;
+      margin-bottom: 0;
+      padding: 10px 14px;
+    }
+
+    .instructions-textarea {
+      min-height: 50px;
+    }
+
+    .meta-input { border-bottom: none; }
+
+    .section-label { margin-bottom: 6px; }
+
+    /* 페이지 넘김 방지 */
+    .daily-table { page-break-inside: avoid; }
+    .daily-table tr { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="app-layout">
+
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰ 팀 목록</button>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">팀 / 구성원</span>
+      <button class="sidebar-add-team" onclick="addTeam()">+ 팀 추가</button>
+    </div>
+    <div id="sidebarTree"></div>
+  </aside>
+
+  <div class="main-wrap">
+    <div class="page">
+
+      <!-- Week Navigator -->
+      <div class="week-nav">
+        <div class="week-label" id="weekLabel">2026년 06월 4주차</div>
+        <div class="nav-group">
+          <button class="nav-btn" onclick="changeWeek(-1)">← 이전 주</button>
+          <select class="nav-btn week-picker" id="weekNavPicker" onchange="jumpToWeekOffset(this.value)"></select>
+          <button class="nav-btn" onclick="goToNextWeek()">다음 주로 바로가기</button>
+          <button class="nav-btn" onclick="changeWeek(1)">다음 주 →</button>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <input class="page-title" id="pageTitle" value="주간 계획" placeholder="제목 없음" />
+
+      <!-- Meta -->
+      <div class="page-meta">
+        <div class="meta-item meta-week">
+          <span class="meta-text meta-week-badge" id="metaWeek">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">팀</span>
+          <span class="meta-text" id="metaTeam">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">담당자</span>
+          <span class="meta-text" id="metaManager">—</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Daily Tasks -->
+      <div class="section-label">📅 일별 업무</div>
+      <table class="daily-table">
+        <colgroup>
+          <col class="day-col">
+          <col style="width:60px">
+          <col>
+        </colgroup>
+        <thead>
+          <tr>
+            <th colspan="2" style="text-align:center;">일자</th>
+            <th>업무 내용</th>
+          </tr>
+        </thead>
+        <tbody id="dailyBody"></tbody>
+      </table>
+
+      <!-- Instructions -->
+      <div class="instructions-box">
+        <div class="section-label">📌 교수님 지시사항</div>
+        <textarea class="instructions-textarea" id="instructionsText" placeholder="지시사항을 입력하세요..." oninput="autoResize(this)"></textarea>
+      </div>
+
+      <!-- Actions -->
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="clearAll()">🗑 초기화</button>
+        <button class="btn btn-secondary" onclick="importLastWeek()">⬅ 지난주 내용 가져오기</button>
+        <button class="btn btn-secondary" onclick="printPlan()">🖨 인쇄</button>
+        <button class="btn btn-primary" onclick="saveData()">💾 저장</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ─── Constants ──────────────────────────────────────────────────────────────
+const DAYS = [
+  { code: 'Mon', label: '월', cls: 'day-Mon' },
+  { code: 'Tue', label: '화', cls: 'day-Tue' },
+  { code: 'Wed', label: '수', cls: 'day-Wed' },
+  { code: 'Thu', label: '목', cls: 'day-Thu' },
+  { code: 'Fri', label: '금', cls: 'day-Fri' },
+];
+
+// Demo content shown only the very first time (first member, current week, no saved data yet)
+const DEMO_PERSON_ID = 'p1';
+const DEFAULT_TASKS = {
+  Mon: ['YT-S4-001 롱폼 편집', "'셀프 인테리어 My Home' 네이버 카페 활동", '유튜브 숏폼, 인스타 릴스 업로드 (오후 5시)'],
+  Tue: ["'셀프 인테리어 My Home' 네이버 카페 활동", '미디어채널 분석자료', '전원속의 내집 인스타그램 카드뉴스 발행'],
+  Wed: ['유튜브 숏폼, 인스타 릴스 업로드 (오후 5시)'],
+  Thu: ['CN. 003 한국 수자원공사 수련원 카드뉴스 업로드'],
+  Fri: ['유튜브 숏폼, 인스타 릴스 업로드 (오후 5시)'],
+};
+
+const DEFAULT_TEAMS = [
+  { id: 't1', name: 'BMD팀', members: [
+      { id: 'p1', name: '임수연PD' }
+  ]},
+  { id: 't2', name: '기술팀', members: [
+   
+  ]}
+];
+
+const TEAMS_KEY = 'wp_teams_v1';
+const SELECTED_KEY = 'wp_selected_v1';
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let TEAMS = [];
+let selectedPersonId = null;
+let currentWeekOffset = 0;
+const collapsedTeams = new Set();
+
+// ─── Firebase ────────────────────────────────────────────────────────────────
+const _firebaseConfig = {
+  apiKey: "AIzaSyC4sYx0-60NVCK2MI9z8cKpKUry4R_bLgM",
+  authDomain: "work-planner-62897.firebaseapp.com",
+  projectId: "work-planner-62897",
+  storageBucket: "work-planner-62897.firebasestorage.app",
+  messagingSenderId: "199105250426",
+  appId: "1:199105250426:web:6cf9f54c659cf5950a67c3"
+};
+let _db = null;
+function getDb() {
+  if (_db) return _db;
+  if (!firebase.apps.length) firebase.initializeApp(_firebaseConfig);
+  _db = firebase.firestore();
+  return _db;
+}
+const FS_COL = 'wp_store';
+
+async function safeGet(key) {
+  try { const snap = await getDb().collection(FS_COL).doc(key).get(); return snap.exists ? snap.data().v : null; }
+  catch(e) { return null; }
+}
+async function safeSet(key, val) {
+  try { await getDb().collection(FS_COL).doc(key).set({ v: val }); }
+  catch(e) { console.error(e); }
+}
+async function safeRemove(key) {
+  try { await getDb().collection(FS_COL).doc(key).delete(); } catch(e) {}
+}
+
+async function loadTeams() {
+  const raw = await safeGet(TEAMS_KEY);
+  if (raw) { try { return JSON.parse(raw); } catch(e) {} }
+  return JSON.parse(JSON.stringify(DEFAULT_TEAMS));
+}
+function persistTeams() { safeSet(TEAMS_KEY, JSON.stringify(TEAMS)); }
+function uid(prefix) { return prefix + '_' + Math.random().toString(36).slice(2, 9); }
+function escapeAttr(str) { return String(str ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;'); }
+function dataKey(personId, offset) { return `wp_data_${personId}_${offset}`; }
+
+function findPerson(personId) {
+  for (const team of TEAMS) {
+    const m = team.members.find(m => m.id === personId);
+    if (m) return { team, person: m };
+  }
+  return null;
+}
+
+// ─── Week helpers ─────────────────────────────────────────────────────────────
+function getWeekStart(offset = 0) {
+  const today = new Date();
+  const day = today.getDay();
+  const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(today.setDate(diff));
+  mon.setDate(mon.getDate() + offset * 7);
+  return mon;
+}
+
+function formatDate(d) {
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${mm}${dd}`;
+}
+
+function getWeekLabel(offset) {
+  const mon = getWeekStart(offset);
+  const year = mon.getFullYear();
+  const month = mon.getMonth() + 1;
+  const weekOfMonth = Math.ceil(mon.getDate() / 7);
+  return `${year}년 ${String(month).padStart(2, '0')}월 ${weekOfMonth}주차`;
+}
+
+// weekPicker(select)에 표시할 주차 범위: 과거 26주 ~ 미래 26주
+const WEEK_PICKER_RANGE = 26;
+
+function populateWeekPicker() {
+  const picker = document.getElementById('weekNavPicker');
+  if (!picker) return;
+  let html = '';
+  for (let off = -WEEK_PICKER_RANGE; off <= WEEK_PICKER_RANGE; off++) {
+    html += `<option value="${off}">${getWeekLabel(off)}</option>`;
+  }
+  picker.innerHTML = html;
+}
+
+async function changeWeek(dir) {
+  await saveCurrentState(true);
+  currentWeekOffset += dir;
+  renderWeek();
+  await loadPersonWeek(selectedPersonId, currentWeekOffset);
+}
+
+// weekPicker(select)에서 "2026년 06월 3주차" 같은 주차를 고르면 해당 주로 이동
+async function jumpToWeekOffset(value) {
+  const offset = parseInt(value, 10);
+  if (Number.isNaN(offset) || offset === currentWeekOffset) return;
+  await saveCurrentState(true);
+  currentWeekOffset = offset;
+  renderWeek();
+  await loadPersonWeek(selectedPersonId, currentWeekOffset);
+}
+
+// 매주 금요일 다음 주 계획을 작성하는 워크플로용: 실제 기준 '다음 주'로 바로 이동
+async function goToNextWeek() {
+  if (currentWeekOffset === 1) return;
+  await saveCurrentState(true);
+  currentWeekOffset = 1;
+  renderWeek();
+  await loadPersonWeek(selectedPersonId, currentWeekOffset);
+}
+
+function renderWeek() {
+  document.getElementById('weekLabel').textContent = getWeekLabel(currentWeekOffset);
+  const metaWeekEl = document.getElementById('metaWeek');
+  if (metaWeekEl) metaWeekEl.textContent = getWeekLabel(currentWeekOffset);
+  const mon = getWeekStart(currentWeekOffset);
+  const picker = document.getElementById('weekNavPicker');
+  if (picker) picker.value = String(currentWeekOffset);
+  const tbody = document.getElementById('dailyBody');
+  tbody.querySelectorAll('tr').forEach((tr, i) => {
+    const d = new Date(mon);
+    d.setDate(mon.getDate() + i);
+    tr.querySelector('.date-cell').textContent = formatDate(d);
+  });
+}
+
+// ─── Daily table skeleton ──────────────────────────────────────────────────────
+function renderDailyTable() {
+  const tbody = document.getElementById('dailyBody');
+  tbody.innerHTML = '';
+  const mon = getWeekStart(currentWeekOffset);
+
+  DAYS.forEach((day, i) => {
+    const d = new Date(mon);
+    d.setDate(mon.getDate() + i);
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="day-tag ${day.cls}">
+          <span class="date-cell">${formatDate(d)}</span>
+        </div>
+      </td>
+      <td style="text-align:center;padding:10px 8px;font-size:13px;font-weight:600;color:#37352f;">${day.label}</td>
+      <td class="tasks-cell">
+        <ul class="task-list" id="tasks-${day.code}"></ul>
+        <button class="add-task-btn" onclick="addTask('${day.code}')">+ 업무 추가</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function addTask(dayCode, value = '') {
+  addTaskItem(dayCode, value);
+  const list = document.getElementById(`tasks-${dayCode}`);
+  const last = list.lastElementChild;
+  if (last) last.querySelector('.task-text').focus();
+}
+
+function addTaskItem(dayCode, value = '') {
+  const list = document.getElementById(`tasks-${dayCode}`);
+  const li = document.createElement('li');
+  li.className = 'task-item';
+
+  const ta = document.createElement('textarea');
+  ta.className = 'task-text';
+  ta.value = value;
+  ta.placeholder = '업무 내용 입력…';
+  ta.rows = 1;
+  ta.oninput = () => autoResize(ta);
+  ta.onkeydown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      addTask(dayCode);
+    }
+    if (e.key === 'Backspace' && ta.value === '') {
+      e.preventDefault();
+      li.remove();
+    }
+  };
+  setTimeout(() => autoResize(ta), 0);
+
+  const btn = document.createElement('button');
+  btn.className = 'task-remove';
+  btn.innerHTML = '✕';
+  btn.onclick = () => li.remove();
+
+  li.appendChild(ta);
+  li.appendChild(btn);
+  list.appendChild(li);
+}
+
+// ─── Sidebar (teams / members, 2-depth) ─────────────────────────────────────────
+function renderSidebar() {
+  const tree = document.getElementById('sidebarTree');
+  tree.innerHTML = '';
+
+  TEAMS.forEach(team => {
+    const group = document.createElement('div');
+    group.className = 'team-group' + (collapsedTeams.has(team.id) ? ' collapsed' : '');
+
+    const row = document.createElement('div');
+    row.className = 'team-row';
+    row.dataset.teamId = team.id;
+    row.innerHTML = `
+      <span class="team-chevron">▾</span>
+      <span class="team-dot"></span>
+      <input class="team-name-input" value="${escapeAttr(team.name)}" />
+      <button class="team-action" title="팀 삭제">✕</button>
+    `;
+    const nameInput = row.querySelector('.team-name-input');
+    const removeBtn = row.querySelector('.team-action');
+
+    row.addEventListener('click', () => toggleTeam(team.id));
+    nameInput.addEventListener('click', (e) => e.stopPropagation());
+    nameInput.addEventListener('input', () => {
+      team.name = nameInput.value;
+      persistTeams();
+      if (team.members.some(m => m.id === selectedPersonId)) updateMemberLabel();
+    });
+    nameInput.addEventListener('keydown', (e) => {
+      // e.isComposing / keyCode 229: 한글 등 IME 조합 중 Enter는 무시 (마지막 글자 중복 입력 방지)
+      if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); nameInput.blur(); }
+    });
+    removeBtn.addEventListener('click', (e) => { e.stopPropagation(); removeTeam(team.id); });
+
+    group.appendChild(row);
+
+    const list = document.createElement('ul');
+    list.className = 'member-list';
+    team.members.forEach(person => {
+      const li = document.createElement('li');
+      const pRow = document.createElement('div');
+      pRow.className = 'person-row' + (person.id === selectedPersonId ? ' active' : '');
+      pRow.dataset.personId = person.id;
+      pRow.innerHTML = `
+        <span class="person-dot"></span>
+        <input class="person-name-input" value="${escapeAttr(person.name)}" />
+        <button class="person-action" title="구성원 삭제">✕</button>
+      `;
+      const pInput = pRow.querySelector('.person-name-input');
+      const pRemove = pRow.querySelector('.person-action');
+
+      pRow.addEventListener('click', () => selectPerson(person.id));
+      pInput.addEventListener('click', (e) => { e.stopPropagation(); selectPerson(person.id); });
+      pInput.addEventListener('input', () => {
+        person.name = pInput.value;
+        persistTeams();
+        if (person.id === selectedPersonId) updateMemberLabel();
+      });
+      pInput.addEventListener('keydown', (e) => {
+        // e.isComposing / keyCode 229: 한글 등 IME 조합 중 Enter는 무시 (마지막 글자 중복 입력 방지)
+        if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); pInput.blur(); }
+      });
+      pRemove.addEventListener('click', (e) => { e.stopPropagation(); removeMember(team.id, person.id); });
+
+      li.appendChild(pRow);
+      list.appendChild(li);
+    });
+    group.appendChild(list);
+
+    const addPersonBtn = document.createElement('button');
+    addPersonBtn.className = 'add-person-btn';
+    addPersonBtn.textContent = '+ 구성원 추가';
+    addPersonBtn.addEventListener('click', (e) => { e.stopPropagation(); addMember(team.id); });
+    group.appendChild(addPersonBtn);
+
+    tree.appendChild(group);
+  });
+}
+
+function toggleTeam(teamId) {
+  if (collapsedTeams.has(teamId)) collapsedTeams.delete(teamId);
+  else collapsedTeams.add(teamId);
+  renderSidebar();
+}
+
+function addTeam() {
+  const team = { id: uid('t'), name: '새 팀', members: [] };
+  TEAMS.push(team);
+  persistTeams();
+  renderSidebar();
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`.team-row[data-team-id="${team.id}"] .team-name-input`);
+    if (el) { el.focus(); el.select(); }
+  });
+}
+
+function removeTeam(teamId) {
+  const team = TEAMS.find(t => t.id === teamId);
+  if (!team) return;
+  if (!confirm(`'${team.name}' 팀을 삭제할까요? 구성원과 저장된 계획도 함께 제거됩니다.`)) return;
+
+  team.members.forEach(m => safeRemove(dataKey(m.id, currentWeekOffset)));
+  TEAMS = TEAMS.filter(t => t.id !== teamId);
+  persistTeams();
+
+  if (team.members.some(m => m.id === selectedPersonId)) {
+    selectedPersonId = TEAMS[0]?.members[0]?.id ?? null;
+    safeSet(SELECTED_KEY, selectedPersonId || '');
+    loadPersonWeek(selectedPersonId, currentWeekOffset);
+  }
+  renderSidebar();
+}
+
+function addMember(teamId) {
+  const team = TEAMS.find(t => t.id === teamId);
+  if (!team) return;
+  const person = { id: uid('p'), name: '새 구성원' };
+  team.members.push(person);
+  persistTeams();
+  selectPerson(person.id, true);
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`.person-row[data-person-id="${person.id}"] .person-name-input`);
+    if (el) { el.focus(); el.select(); }
+  });
+}
+
+async function removeMember(teamId, personId) {
+  const team = TEAMS.find(t => t.id === teamId);
+  if (!team) return;
+  if (!confirm('이 구성원을 삭제할까요? 저장된 계획도 함께 제거됩니다.')) return;
+
+  team.members = team.members.filter(m => m.id !== personId);
+  persistTeams();
+  await safeRemove(dataKey(personId, currentWeekOffset));
+
+  if (selectedPersonId === personId) {
+    selectedPersonId = team.members[0]?.id ?? TEAMS.flatMap(t => t.members)[0]?.id ?? null;
+    await safeSet(SELECTED_KEY, selectedPersonId || '');
+    await loadPersonWeek(selectedPersonId, currentWeekOffset);
+  }
+  renderSidebar();
+}
+
+async function selectPerson(personId, skipSave) {
+  if (personId === selectedPersonId) { closeSidebarMobile(); return; }
+  if (!skipSave) await saveCurrentState(true);
+  selectedPersonId = personId;
+  await safeSet(SELECTED_KEY, personId || '');
+  renderSidebar();
+  await loadPersonWeek(selectedPersonId, currentWeekOffset);
+  closeSidebarMobile();
+}
+
+function updateMemberLabel() {
+  const found = findPerson(selectedPersonId);
+  const teamEl = document.getElementById('metaTeam');
+  const managerEl = document.getElementById('metaManager');
+  if (found) {
+    teamEl.textContent = found.team.name;
+    managerEl.textContent = found.person.name;
+  }
+}
+
+// ─── Load / save plan data per person + week ────────────────────────────────────
+async function loadPersonWeek(personId, offset) {
+  const teamEl = document.getElementById('metaTeam');
+  const managerEl = document.getElementById('metaManager');
+  const instructionsText = document.getElementById('instructionsText');
+  const found = findPerson(personId);
+
+  DAYS.forEach(d => { document.getElementById(`tasks-${d.code}`).innerHTML = ''; });
+
+  if (!found) {
+    teamEl.textContent = '—';
+    managerEl.textContent = '—';
+    instructionsText.value = '';
+    return;
+  }
+
+  let data = null;
+  const raw = await safeGet(dataKey(personId, offset));
+  if (raw) { try { data = JSON.parse(raw); } catch(e) {} }
+
+  teamEl.textContent = found.team.name;
+  managerEl.textContent = found.person.name;
+
+  if (data && data.tasks) {
+    DAYS.forEach(d => (data.tasks[d.code] || []).forEach(t => addTaskItem(d.code, t)));
+  } else if (personId === DEMO_PERSON_ID && offset === 0) {
+    DAYS.forEach(d => (DEFAULT_TASKS[d.code] || []).forEach(t => addTaskItem(d.code, t)));
+  }
+
+  instructionsText.value = (data && data.instructions) || '';
+  autoResize(instructionsText);
+}
+
+// 지난주(현재 보고 있는 주의 바로 전 주) 업무 내용을 그대로 가져와 현재 주에 채워넣기
+async function importLastWeek() {
+  if (!selectedPersonId) { showToast('선택된 구성원이 없습니다.', true); return; }
+
+  const raw = await safeGet(dataKey(selectedPersonId, currentWeekOffset - 1));
+  if (!raw) { showToast('지난주에 저장된 내용이 없습니다.', true); return; }
+
+  let data = null;
+  try { data = JSON.parse(raw); } catch(e) {}
+  if (!data) { showToast('지난주 내용을 불러올 수 없습니다.', true); return; }
+
+  const hasCurrentContent = DAYS.some(d => document.querySelectorAll(`#tasks-${d.code} .task-text`).length > 0)
+    || document.getElementById('instructionsText').value.trim() !== '';
+  if (hasCurrentContent && !confirm('현재 주의 내용을 지난주 내용으로 덮어쓸까요?')) return;
+
+  DAYS.forEach(d => { document.getElementById(`tasks-${d.code}`).innerHTML = ''; });
+  if (data.tasks) {
+    DAYS.forEach(d => (data.tasks[d.code] || []).forEach(t => addTaskItem(d.code, t)));
+  }
+
+  const instructionsText = document.getElementById('instructionsText');
+  instructionsText.value = data.instructions || '';
+  autoResize(instructionsText);
+
+  showToast('지난주 내용을 가져왔습니다 ✓');
+}
+
+async function saveCurrentState(silent) {
+  if (!selectedPersonId) { if (!silent) showToast('선택된 구성원이 없습니다.', true); return; }
+
+  const found = findPerson(selectedPersonId);
+  const data = {
+    member: found ? `${found.team.name} ${found.person.name}` : '',
+    tasks: {},
+    instructions: document.getElementById('instructionsText').value,
+  };
+  DAYS.forEach(d => {
+    data.tasks[d.code] = [...document.querySelectorAll(`#tasks-${d.code} .task-text`)].map(t => t.value).filter(Boolean);
+  });
+
+  try {
+    await safeSet(dataKey(selectedPersonId, currentWeekOffset), JSON.stringify(data));
+    if (!silent) showToast('저장되었습니다 ✓');
+  } catch(e) {
+    if (!silent) showToast('저장 실패: ' + e.message, true);
+  }
+}
+
+function saveData() { saveCurrentState(false); }
+
+// ─── Mobile sidebar toggle ──────────────────────────────────────────────────────
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebarMobile() {
+  if (window.innerWidth <= 880) {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+  }
+}
+
+// ─── Utilities ─────────────────────────────────────────────────────────────────
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+async function clearAll() {
+  if (!confirm('현재 화면(이 구성원·이 주)의 내용을 초기화할까요?')) return;
+  DAYS.forEach(d => { document.getElementById(`tasks-${d.code}`).innerHTML = ''; });
+  document.getElementById('instructionsText').value = '';
+  autoResize(document.getElementById('instructionsText'));
+  if (selectedPersonId) await safeRemove(dataKey(selectedPersonId, currentWeekOffset));
+}
+
+async function printPlan() {
+  await saveCurrentState(true);
+  const week = getWeekLabel(currentWeekOffset);
+  const found = findPerson(selectedPersonId);
+  const member = (found ? `${found.team.name}_${found.person.name}` : '주간계획');
+  const prevTitle = document.title;
+  document.title = `${member}_${week}`.replace(/\s+/g, '_');
+  window.print();
+  setTimeout(() => { document.title = prevTitle; }, 500);
+}
+
+function showToast(msg, isError = false) {
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  Object.assign(toast.style, {
+    position: 'fixed', bottom: '32px', right: '32px',
+    background: isError ? '#eb5757' : '#37352f',
+    color: '#fff', padding: '10px 18px', borderRadius: '6px',
+    fontSize: '14px', zIndex: 9999,
+    boxShadow: '0 4px 12px rgba(0,0,0,.15)',
+    transition: 'opacity 0.3s',
+  });
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 300); }, 2000);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+async function init() {
+  renderDailyTable();
+  populateWeekPicker();
+  renderWeek();
+
+  TEAMS = await loadTeams();
+  selectedPersonId = (await safeGet(SELECTED_KEY)) || (TEAMS[0]?.members[0]?.id ?? null);
+
+  renderSidebar();
+  await loadPersonWeek(selectedPersonId, currentWeekOffset);
+  document.querySelectorAll('textarea').forEach(autoResize);
+}
+
+init();
+</script>
+</body>
+</html>
