@@ -45,10 +45,12 @@ button{cursor:pointer;}
 .brand-text h1{font-size:16px;}
 .brand-text span{font-size:11.5px;color:var(--text-muted);}
 .doc-number{display:none;}
+.hp-header-summary{display:none;}
 .period-picker{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-muted);}
 .period-picker input{border:1px solid var(--border);border-radius:7px;padding:6px 8px;font-size:12.5px;color:var(--text);background:var(--surface-2);}
 .period-label{font-size:11.5px;color:var(--text-light);margin-right:2px;white-space:nowrap;}
 .period-print-label{display:none;}
+.period-print-block{display:none;}
 .week-nav-btn{padding:6px 10px; font-size:12px; white-space:nowrap;}
 .toolbar-actions{display:flex;gap:8px;}
 .btn{
@@ -337,9 +339,9 @@ table.hp-table mark.hp-max-hl{
 .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
 
 /* ===== Print (A4 세로형, 2페이지 목표) ===== */
-@page{ size:A4 portrait; margin:14mm 9mm 13mm 9mm; }
+@page{ size:A4 portrait; margin:19mm 9mm 18mm 9mm; }
 /* 1페이지는 아래 여백을 조금 더 넉넉하게(위 여백은 모든 페이지 공통) */
-@page :first{ margin:14mm 9mm 15mm 9mm; }
+@page :first{ margin:19mm 9mm 20mm 9mm; }
 /* 페이지 우측 하단에 1/2, 2/2 형식의 쪽 번호 표시 (아래쪽 여백 확보) */
 @page{ @bottom-right{ content: counter(page) "/" counter(pages); font-size:21px; color:#6b6b7a; padding-bottom:3mm; } }
 @media print{
@@ -347,7 +349,7 @@ table.hp-table mark.hp-max-hl{
   html, body{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
   .paste-zone, .btn, .no-print, .section-toggle-btn, .detail-toggle, .toast{display:none !important;}
   body{background:#fff; padding:0; font-size:9.4px;}
-  .wrap{max-width:100%; padding:0; margin:0;}
+  .wrap{max-width:100%; padding:0; margin-top:18mm !important; margin-left:0; margin-right:0; margin-bottom:0;}
   .card{box-shadow:none; border:1px solid #ddd;}
   .section{margin-bottom:9px;}
 
@@ -357,20 +359,26 @@ table.hp-table mark.hp-max-hl{
     break-inside:avoid; page-break-inside:avoid;
   }
 
-  /* 상단 바: 로고/제목과 리포트 기간만 인쇄에 남기고, 조작용 버튼류는 숨김 */
+  /* 상단 바: 로고/제목과 리포트 기간만 인쇄에 남기고, 조작용 버튼류는 숨김.
+     모든 페이지 맨 위에 반복해서 나오도록 고정 위치로 배치(각 페이지 여백 안에 그려짐). */
   .topbar{
-    display:block !important; position:static; background:#fff; backdrop-filter:none;
-    border-bottom:1px solid #ddd; box-shadow:none; margin-bottom:8px;
+    display:block !important; position:fixed !important; top:0; left:0; right:0;
+    background:#fff; backdrop-filter:none;
+    border-bottom:1px solid #ddd; box-shadow:none; margin-bottom:0;
   }
   .topbar-inner{padding:0 0 6px; gap:8px;}
   .brand-mark{width:20px; height:20px;}
   .brand-text h1{font-size:12px;}
   .brand-text span{font-size:8px;}
   .doc-number{display:inline-block !important; font-size:15px !important; color:#000 !important; font-weight:800 !important; margin-left:4px; align-self:flex-end; padding:1px 7px; background:#eef0f4; border-radius:4px; letter-spacing:.02em;}
+  .hp-header-summary{display:flex !important; align-items:center; gap:5px; align-self:flex-end; margin-left:6px; font-size:12px !important; font-weight:700 !important; color:#000 !important;}
+  .hp-header-summary .delta-badge{font-size:10px; padding:2px 7px; border-radius:10px; font-weight:600;}
   .toolbar-actions, #cloudStatus{display:none !important;}
   .period-label, .period-sep, .period-picker input[type="date"]{display:none !important;}
   .period-picker{font-size:9.5px; gap:0;}
+  .period-print-block{display:flex !important; flex-direction:column; align-items:flex-end; gap:2px;}
   .period-print-label{display:inline !important; font-size:9.5px; color:var(--text-muted); white-space:nowrap;}
+  .print-date-label{display:inline !important; font-size:8px; color:var(--text-muted); white-space:nowrap;}
 
   /* 종합 요약: 5칸 항상 한 줄, 세로 크기 2배로 확대 */
   .summary-section{margin-bottom:9px; padding-top:12px;}
@@ -418,8 +426,10 @@ table.hp-table mark.hp-max-hl{
   .content-subtitle .cnt-badge{display:none;}
 
   /* 카페 활동부터 2페이지로: 롱폼·쇼츠·카드뉴스는 1페이지, 카페 활동+Blog+홈페이지 현황은
-     2페이지에 함께 배치 */
-  #tab-cafe{page-break-before:always; break-before:page;}
+     2페이지에 함께 배치. margin-top은 2페이지 맨 위에서도 고정 헤더와 겹치지 않도록
+     확보한 여백(.wrap의 margin-top과 동일) — margin-top은 페이지가 바뀔 때마다는
+     자동으로 재적용되지 않으므로, 강제 페이지 나눔 지점에 직접 지정해준다. */
+  #tab-cafe{page-break-before:always; break-before:page; margin-top:18mm !important;}
 
   /* 홈페이지 현황: 카페 활동 바로 아래(2페이지)로 자연스럽게 이어지도록 여백만 확보 */
   .section-hp{margin-top:3mm; margin-bottom:0;}
@@ -562,6 +572,7 @@ table.hp-table mark.hp-max-hl{
         <span>SNS · 홈페이지 통합 분석</span>
       </div>
       <span class="doc-number" id="docNumber"></span>
+      <div class="hp-header-summary" id="hpHeaderSummary"></div>
     </div>
     <div class="period-picker">
       <span class="period-label">리포트 주간</span>
@@ -571,7 +582,10 @@ table.hp-table mark.hp-max-hl{
       <input type="date" id="periodEnd" onchange="onPeriodChange()">
       <button class="btn week-nav-btn" onclick="shiftWeek(1)" title="다음 일주일">다음 ▶</button>
       <button class="btn week-nav-btn" onclick="goToday()" title="전주 화요일 ~ 이번주 월요일">이번 주</button>
-      <span class="period-print-label" id="periodPrintLabel"></span>
+      <div class="period-print-block">
+        <span class="period-print-label" id="periodPrintLabel"></span>
+        <span class="print-date-label" id="printDateLabel"></span>
+      </div>
     </div>
     <div class="toolbar-actions">
       <button class="btn btn-danger-outline" onclick="resetAll()">🗑 초기화</button>
@@ -1082,6 +1096,13 @@ function updatePeriodPrintLabel(){
   const el = document.getElementById('periodPrintLabel');
   if(el) el.textContent = (s && e) ? `${formatDateDot(s)} ~ ${formatDateDot(e)}` : '';
   updateDocNumber();
+  updatePrintDateLabel();
+}
+
+/* 인쇄용 '작성일자'는 리포트가 다루는 기간과 무관하게, 실제로 인쇄/저장하는 시점(오늘)을 표시한다. */
+function updatePrintDateLabel(){
+  const el = document.getElementById('printDateLabel');
+  if(el) el.textContent = `작성일자 : ${formatDateDot(todayStr())}`;
 }
 
 /* 리포트 일련번호(예: 2026-001) 계산: 달력 주차가 아니라, 같은 연도에서
@@ -1204,6 +1225,11 @@ function loadOrResetPeriod(newStart, newEnd){
   if(match){
     applyStateFromData(match);
     state.period = {start:newStart, end:newEnd}; // 화면에는 사용자가 고른 날짜를 그대로 유지
+    // match가 정확히 같은 기간이 아니라 '가장 많이 겹치는' 이력일 수 있으므로,
+    // 그 이력에 들어있던 글 중 실제로는 새 기간 범위 밖의 게시일을 가진 것들은
+    // 이번 기간 데이터가 아니다 → 빈 슬롯으로 되돌린다 (예: 이전 주로 이동했는데
+    // 겹치지 않는 기간에 있던 Blog 글이 그대로 남아있던 문제).
+    clearPostsOutsidePeriod(newStart, newEnd);
   } else {
     resetContentForPeriod(newStart, newEnd);
   }
@@ -1562,12 +1588,14 @@ function renderHomepage(){
     document.getElementById('hpInsights').innerHTML = '';
     document.getElementById('hpLegend').innerHTML = '';
     if(hpChart){ hpChart.destroy(); hpChart = null; }
+    updateHpHeaderSummary(null, null);
     refreshSummary();
     renderMentionEffect();
     return;
   }
   const totalPV = rows.reduce((s,r)=>s+r.pageviews,0);
   const totalV  = rows.reduce((s,r)=>s+r.visitors,0);
+  updateHpHeaderSummary(totalPV, totalV);
   const bestDay = rows.reduce((a,b)=> b.pageviews > a.pageviews ? b : a, rows[0]);
   statRow.innerHTML = `
     <div class="hp-stat-group">
@@ -1664,6 +1692,42 @@ function computeChartMarkers(rows){
     }
   }
   return list;
+}
+
+/* 헤더에 표시할 'HP : N명 방문, N 뷰' 요약 텍스트를 계산해 반영한다. totalPV/totalV가 없으면
+   (선택된 기간에 홈페이지 데이터가 없으면) 빈 문자열로 비운다. 지난주(현재 기간 시작일 바로
+   전날을 마지막 날로 하는 이력)의 합계를 찾을 수 있으면 그 대비 증감(▲/▼)도 함께 표시한다. */
+function findPrevPeriodHomepageTotals(){
+  const curStart = (document.getElementById('periodStart') && document.getElementById('periodStart').value) || state.period.start || '';
+  if(!curStart) return null;
+  const prevEnd = addDaysToDateStr(curStart, -1);
+  const h = historyReports.find(hh => hh.period && hh.period.end === prevEnd);
+  if(!h || !h.homepage || !h.homepage.rows || !h.homepage.rows.length) return null;
+  const pv = h.homepage.rows.reduce((s,r)=>s+(r.pageviews||0),0);
+  const v  = h.homepage.rows.reduce((s,r)=>s+(r.visitors||0),0);
+  return {pv, v};
+}
+
+function updateHpHeaderSummary(totalPV, totalV){
+  const el = document.getElementById('hpHeaderSummary');
+  if(!el) return;
+  if(totalPV == null || totalV == null){
+    el.innerHTML = '';
+    return;
+  }
+  let html = `<span>HP : ${totalV.toLocaleString()}명 방문, ${totalPV.toLocaleString()} 뷰</span>`;
+  const prev = findPrevPeriodHomepageTotals();
+  if(prev){
+    const diffV = totalV - prev.v;
+    const diffPV = totalPV - prev.pv;
+    const clsV = diffV > 0 ? 'up' : diffV < 0 ? 'down' : 'flat';
+    const clsPV = diffPV > 0 ? 'up' : diffPV < 0 ? 'down' : 'flat';
+    const arrowV = diffV > 0 ? '▲' : diffV < 0 ? '▼' : '—';
+    const arrowPV = diffPV > 0 ? '▲' : diffPV < 0 ? '▼' : '—';
+    html += `<span class="delta-badge ${clsV}">방문 ${arrowV}${Math.abs(diffV).toLocaleString()}</span>`;
+    html += `<span class="delta-badge ${clsPV}">뷰 ${arrowPV}${Math.abs(diffPV).toLocaleString()}</span>`;
+  }
+  el.innerHTML = html;
 }
 
 /* 이번 기간 첫날 바로 전날(=지난 기간 마지막 날)의 홈페이지 방문자 데이터와, 그 날 발행된
@@ -1858,7 +1922,7 @@ function refreshHomepageInsights(rows){
       if(prevVisitors !== null){
         const diff = first.visitors - prevVisitors;
         const pct = prevVisitors ? Math.round(diff/prevVisitors*100) : 0;
-        txt += `<mark>다음날 방문자 ${first.visitors.toLocaleString()}명 (전날 대비 ${diff>=0?'+':''}${pct}%)</mark>`;
+        txt += `다음날 방문자 ${first.visitors.toLocaleString()}명 (전날 대비 ${diff>=0?'+':''}${pct}%)`;
       } else {
         txt += `다음날 방문자 ${first.visitors.toLocaleString()}명`;
       }
@@ -2174,6 +2238,19 @@ function applyStateFromData(data){
     });
   }
   state.homepage = data.homepage || state.homepage;
+}
+
+/* 게시일(date)이 채워져 있는데 [start, end] 범위 밖인 글은 이번 기간의 데이터가
+   아니므로 빈 슬롯으로 되돌린다. 아직 날짜를 안 넣은(입력 중인) 글은 판단할 수
+   없으므로 그대로 둔다. */
+function clearPostsOutsidePeriod(start, end){
+  CONTENT_TYPES.forEach(ct => {
+    if(!Array.isArray(state.posts[ct.key])) return;
+    state.posts[ct.key] = state.posts[ct.key].map(p => {
+      if(p.date && (p.date < start || p.date > end)) return emptyPost(ct);
+      return p;
+    });
+  });
 }
 
 function resetAll(){
