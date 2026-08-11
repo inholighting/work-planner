@@ -339,6 +339,31 @@ table.hp-table mark.hp-max-hl{
 .opinion-box:focus{outline:none; border-color:var(--hp); background:#fff;}
 .opinion-box:empty:before{content:attr(data-placeholder); color:var(--text-light);}
 
+/* ===== 담당자 분석 의견 서식 툴바 (글자색 / 형광펜) ===== */
+.format-toolbar{
+  display:flex; align-items:center; flex-wrap:wrap; gap:10px;
+  background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:8px 12px; margin-bottom:10px; font-size:11px; color:var(--text-muted);
+}
+.format-toolbar-group{display:flex; align-items:center; gap:5px;}
+.format-toolbar-label{font-weight:600; letter-spacing:.02em; margin-right:2px;}
+.swatch-btn{
+  width:20px; height:20px; border-radius:50%; border:1px solid rgba(0,0,0,.12);
+  cursor:pointer; padding:0; flex-shrink:0; transition:transform .1s;
+}
+.swatch-btn:hover{transform:scale(1.15);}
+.swatch-btn.is-clear{background:#fff; position:relative;}
+.swatch-btn.is-clear:before{
+  content:''; position:absolute; left:2px; right:2px; top:50%; height:1px;
+  background:var(--danger); transform:rotate(45deg);
+}
+.format-toolbar-divider{width:1px; height:18px; background:var(--border);}
+.format-clear-btn{
+  border:none; background:none; cursor:pointer; color:var(--text-muted);
+  font-size:11px; padding:3px 8px; border-radius:4px; font-family:var(--font);
+}
+.format-clear-btn:hover{background:rgba(0,0,0,.06); color:var(--text);}
+
 /* ===== Toast ===== */
 .toast{
   position:fixed; bottom:26px; left:50%; transform:translateX(-50%);
@@ -645,13 +670,36 @@ table.hp-table mark.hp-max-hl{
 
 <div class="wrap">
 
-  <!-- ============ 종합 요약 (최상단) ============ -->
-  <div class="section summary-section">
-    <div class="section-head">
-      <span class="eyebrow">SUMMARY</span>
-      <h2>이번 주 종합 요약</h2>
+  <!-- ============ 담당자 분석 의견 (최상단) ============ -->
+  <div class="section section-opinion">
+    <div class="section-head collapsible" onclick="toggleSection('opinion')">
+      <span class="eyebrow">MEMO</span>
+      <h2>담당자 분석 의견</h2>
+      <span class="section-toggle-btn" id="toggle-opinion">−</span>
     </div>
-    <div class="summary-grid" id="summaryGrid"></div>
+    <div class="section-body" id="body-opinion">
+      <div class="card opinion-card">
+        <div class="format-toolbar no-print" id="opinionFormatToolbar">
+          <div class="format-toolbar-group">
+            <span class="format-toolbar-label">글자색</span>
+            <button type="button" class="swatch-btn" style="background:#1c1c22" title="검정" onmousedown="event.preventDefault()" onclick="applyOpinionColor('#1c1c22')"></button>
+            <button type="button" class="swatch-btn" style="background:#eb5757" title="빨강" onmousedown="event.preventDefault()" onclick="applyOpinionColor('#eb5757')"></button>
+            <button type="button" class="swatch-btn" style="background:#2f80ed" title="파랑" onmousedown="event.preventDefault()" onclick="applyOpinionColor('#2f80ed')"></button>
+          </div>
+          <div class="format-toolbar-divider"></div>
+          <div class="format-toolbar-group">
+            <span class="format-toolbar-label">형광펜</span>
+            <button type="button" class="swatch-btn" style="background:#fff3a3" title="노랑" onmousedown="event.preventDefault()" onclick="applyOpinionHighlight('#fff3a3')"></button>
+            <button type="button" class="swatch-btn" style="background:#ffd0d0" title="빨강" onmousedown="event.preventDefault()" onclick="applyOpinionHighlight('#ffd0d0')"></button>
+            <button type="button" class="swatch-btn" style="background:#cde3fb" title="파랑" onmousedown="event.preventDefault()" onclick="applyOpinionHighlight('#cde3fb')"></button>
+            <button type="button" class="swatch-btn is-clear" title="형광펜 지우기" onmousedown="event.preventDefault()" onclick="applyOpinionHighlight('transparent')"></button>
+          </div>
+          <div class="format-toolbar-divider"></div>
+          <button type="button" class="format-clear-btn" onmousedown="event.preventDefault()" onclick="clearOpinionFormat()">서식 지우기</button>
+        </div>
+        <div class="opinion-box" id="opinionBox" contenteditable="true" data-placeholder="담당자 분석 의견을 입력하세요..." oninput="onOpinionInput()"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ============ SNS 현황 ============ -->
@@ -756,21 +804,6 @@ table.hp-table mark.hp-max-hl{
           </div>
           <ul class="insight-list" id="hpInsights"></ul>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ 담당자 분석 의견 ============ -->
-  <div class="section section-opinion">
-    <div class="section-head collapsible" onclick="toggleSection('opinion')">
-      <span class="eyebrow">03</span>
-      <h2>담당자 분석 의견</h2>
-      <span class="section-toggle-btn" id="toggle-opinion">−</span>
-    </div>
-    <p class="section-desc">이번 주 리포트에 대한 담당자의 분석 의견을 작성하세요.</p>
-    <div class="section-body" id="body-opinion">
-      <div class="card opinion-card">
-        <div class="opinion-box" id="opinionBox" contenteditable="true" data-placeholder="담당자 분석 의견을 입력하세요..." oninput="onOpinionInput()"></div>
       </div>
     </div>
   </div>
@@ -1289,12 +1322,124 @@ function renderAll(){
   renderHomepage();
   refreshSummary();
   const opinionBox = document.getElementById('opinionBox');
-  if(opinionBox && opinionBox.innerText !== (state.opinion || '')) opinionBox.innerText = state.opinion || '';
+  if(opinionBox){
+    const opinionHtml = opinionToDisplayHtml(state.opinion || '');
+    if(opinionBox.innerHTML !== opinionHtml) opinionBox.innerHTML = opinionHtml;
+  }
 }
 
+// 예전 버전은 일반 텍스트(줄바꿈 \n)로 저장했고, 글자색/형광펜 기능 추가 이후에는
+// HTML(색상 span 포함)로 저장한다. 이미 HTML로 저장된 값은 그대로 쓰고, 예전 일반
+// 텍스트 값은 이스케이프해서 줄바꿈만 <br>로 살려 보여준다(하위 호환).
+function opinionToDisplayHtml(raw){
+  if(!raw) return '';
+  if(/<[a-z][\s\S]*>/i.test(raw)) return raw;
+  return escAttr(raw).replace(/\n/g, '<br>');
+}
 function onOpinionInput(){
-  state.opinion = document.getElementById('opinionBox').innerText;
+  state.opinion = document.getElementById('opinionBox').innerHTML;
   scheduleAutoSave();
+}
+function opinionEnsureFocus(){
+  const el = document.getElementById('opinionBox');
+  if(!el) return null;
+  const sel = window.getSelection();
+  const inside = sel && sel.rangeCount > 0 && el.contains(sel.getRangeAt(0).commonAncestorContainer);
+  if(!inside){
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+  return el;
+}
+function opinionGetSelRange(){
+  const sel = window.getSelection();
+  if(!sel || sel.rangeCount === 0) return null;
+  return {sel, range: sel.getRangeAt(0)};
+}
+// 커서가 서식(색/형광펜) span의 경계에 있을 때 그 span '안쪽'에 마커를 넣으면
+// 중첩되어 배경색이 어긋나 보이는 문제가 있어, span 바깥의 형제 위치로 삽입 지점을
+// 옮겨준다.
+function opinionEscapeStyledBoundary(root, range){
+  let container = range.startContainer;
+  let offset = range.startOffset;
+  while(container && container !== root){
+    const len = container.nodeType === 3 ? container.length : container.childNodes.length;
+    const parent = container.parentNode;
+    if(!parent) break;
+    if(offset === len){
+      const idx = Array.prototype.indexOf.call(parent.childNodes, container);
+      container = parent; offset = idx + 1;
+    } else if(offset === 0){
+      const idx = Array.prototype.indexOf.call(parent.childNodes, container);
+      container = parent; offset = idx;
+    } else {
+      break;
+    }
+  }
+  const r = document.createRange();
+  r.setStart(container, offset);
+  r.collapse(true);
+  return r;
+}
+// 커서만 있고 선택 영역이 없을 때, 폭 0(zero-width) 글자를 원하는 서식으로 심어
+// 이어서 입력하는 글자가 그 서식을 물려받도록 한다.
+function opinionInsertTypingMarker(el, range, styleProps){
+  const escapedRange = opinionEscapeStyledBoundary(el, range);
+  const span = document.createElement('span');
+  Object.assign(span.style, styleProps);
+  span.appendChild(document.createTextNode('​'));
+  escapedRange.insertNode(span);
+  const sel = window.getSelection();
+  const newRange = document.createRange();
+  newRange.setStart(span.firstChild, 1);
+  newRange.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(newRange);
+}
+function applyOpinionColor(color){
+  const el = opinionEnsureFocus();
+  if(!el) return;
+  const info = opinionGetSelRange();
+  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
+  if(info && info.range.collapsed){
+    opinionInsertTypingMarker(el, info.range, {color});
+  } else {
+    document.execCommand('foreColor', false, color);
+  }
+  onOpinionInput();
+}
+function applyOpinionHighlight(color){
+  const el = opinionEnsureFocus();
+  if(!el) return;
+  const info = opinionGetSelRange();
+  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
+  if(info && info.range.collapsed){
+    opinionInsertTypingMarker(el, info.range, {backgroundColor:color});
+  } else {
+    const cmd = document.queryCommandSupported && document.queryCommandSupported('hiliteColor') ? 'hiliteColor' : 'backColor';
+    document.execCommand(cmd, false, color);
+  }
+  onOpinionInput();
+}
+function clearOpinionFormat(){
+  const el = opinionEnsureFocus();
+  if(!el) return;
+  const info = opinionGetSelRange();
+  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
+  document.execCommand('removeFormat');
+  const sel2 = window.getSelection();
+  if(info && info.range.collapsed && sel2 && sel2.rangeCount){
+    opinionInsertTypingMarker(el, sel2.getRangeAt(0), {color:'#1c1c22', backgroundColor:'transparent'});
+  } else {
+    document.execCommand('foreColor', false, '#1c1c22');
+    const hiliteCmd = document.queryCommandSupported && document.queryCommandSupported('hiliteColor') ? 'hiliteColor' : 'backColor';
+    document.execCommand(hiliteCmd, false, 'transparent');
+  }
+  onOpinionInput();
 }
 
 let _periodChangeTimer = null;
@@ -2272,6 +2417,7 @@ function renderWindowImpactList(items){
 =================================================================== */
 function refreshSummary(){
   const grid = document.getElementById('summaryGrid');
+  if(!grid) return; // 종합 요약 섹션을 제거했으므로 더 이상 렌더링할 대상이 없다
 
   let totalContentViews = 0, topPost = null;
   const typeTotals = {longform:0, shortsYt:0, shortsIg:0};
