@@ -493,11 +493,14 @@ table.hp-table mark.hp-max-hl{
   .content-subtitle{font-size:9.9px; margin-bottom:2px;}
   .content-subtitle .cnt-badge{display:none;}
 
-  /* Blog까지는 억지로 페이지를 나누지 않고, 앞의 카드들이 자연스럽게 채워지다가
-     실제로 한 페이지에 다 안 들어갈 때만 브라우저가 알아서 다음 페이지로 넘긴다
-     (위의 .card/.chart-box 등에 건 break-inside:avoid 덕분에 카드 중간이 잘리지는
-     않는다). 다만 "홈페이지 현황"(02)은 요청에 따라 항상 새 페이지에서 시작한다. */
-  .section-hp{margin-top:3mm; margin-bottom:0; page-break-before:always; break-before:page;}
+  /* 롱폼/SRC/카드뉴스까지는 억지로 페이지를 나누지 않고, 앞의 카드들이 자연스럽게
+     채워지다가 실제로 한 페이지에 다 안 들어갈 때만 브라우저가 알아서 다음 페이지로
+     넘긴다 (위의 .card/.chart-box 등에 건 break-inside:avoid 덕분에 카드 중간이
+     잘리지는 않는다). Blog는 요청에 따라 항상 새 페이지에서 시작하고, "홈페이지
+     현황"(02)은 그 뒤에 강제 개행 없이 자연스럽게 이어진다(같은 페이지에 들어가면
+     같은 페이지, 넘치면 자동으로 다음 페이지). */
+  #tab-blog{page-break-before:always; break-before:page;}
+  .section-hp{margin-top:3mm; margin-bottom:0;}
 
   /* 게시물 표: 고정 레이아웃 + 컬럼별 폭 지정으로 가로 넘침 방지 */
   .post-row.empty{display:none !important;}
