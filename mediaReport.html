@@ -151,6 +151,7 @@ input[type="file"]{display:none;}
 /* ===== Post table (compact) ===== */
 .post-table-wrap{overflow-x:auto; margin-bottom:10px;}
 .print-label{display:none;}
+.title-print{display:none;}
 table.post-table{width:100%; border-collapse:collapse; min-width:620px;}
 table.post-table th{
   text-align:left; font-size:10.3px; color:var(--text-light); font-weight:400; text-transform:uppercase;
@@ -326,41 +327,6 @@ table.hp-table mark.hp-max-hl{
   padding:0 1px;
 }
 
-/* ===== 담당자 분석 의견 ===== */
-.opinion-card{padding:14px 16px;}
-.opinion-box{
-  min-height:100px; border:1px solid var(--border); border-radius:var(--radius-sm);
-  padding:12px 14px; font-size:13.5px; line-height:1.75; color:var(--text);
-  background:var(--surface-2); white-space:pre-wrap; word-break:break-word; cursor:text;
-}
-.opinion-box:focus{outline:none; border-color:var(--hp); background:#fff;}
-.opinion-box:empty:before{content:attr(data-placeholder); color:var(--text-light);}
-
-/* ===== 담당자 분석 의견 서식 툴바 (글자색 / 형광펜) ===== */
-.format-toolbar{
-  display:flex; align-items:center; flex-wrap:wrap; gap:10px;
-  background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm);
-  padding:8px 12px; margin-bottom:10px; font-size:11.9px; color:var(--text-muted);
-}
-.format-toolbar-group{display:flex; align-items:center; gap:5px;}
-.format-toolbar-label{font-weight:600; letter-spacing:.02em; margin-right:2px;}
-.swatch-btn{
-  width:20px; height:20px; border-radius:50%; border:1px solid rgba(0,0,0,.12);
-  cursor:pointer; padding:0; flex-shrink:0; transition:transform .1s;
-}
-.swatch-btn:hover{transform:scale(1.15);}
-.swatch-btn.is-clear{background:#fff; position:relative;}
-.swatch-btn.is-clear:before{
-  content:''; position:absolute; left:2px; right:2px; top:50%; height:1px;
-  background:var(--danger); transform:rotate(45deg);
-}
-.format-toolbar-divider{width:1px; height:18px; background:var(--border);}
-.format-clear-btn{
-  border:none; background:none; cursor:pointer; color:var(--text-muted);
-  font-size:11.9px; padding:3px 8px; border-radius:4px; font-family:var(--font);
-}
-.format-clear-btn:hover{background:rgba(0,0,0,.06); color:var(--text);}
-
 /* ===== Toast ===== */
 .toast{
   position:fixed; bottom:26px; left:50%; transform:translateX(-50%);
@@ -388,7 +354,7 @@ table.hp-table mark.hp-max-hl{
 /* 1페이지는 아래 여백을 조금 더 넉넉하게(위 여백은 모든 페이지 공통) */
 @page :first{ margin:19mm 9mm 20mm 9mm; }
 /* 페이지 우측 하단에 1/2, 2/2 형식의 쪽 번호 표시 (아래쪽 여백 확보) */
-@page{ @bottom-right{ content: counter(page) "/" counter(pages); font-size:22.7px; color:#333; padding-bottom:3mm; } }
+@page{ @bottom-right{ content: counter(page) "/" counter(pages); font-size:25.7px; color:#333; padding-bottom:3mm; } }
 @media print{
   /* 화면용 --text/--text-muted/--text-light는 미세하게 푸른빛이 도는 색(예: #1c1c22 -
      R,G보다 B가 높음)이었다. 이런 색은 인쇄 시 검정 토너만으로 표현되지 않고
@@ -400,7 +366,7 @@ table.hp-table mark.hp-max-hl{
   :root{ --text:#000; --text-muted:#333; --text-light:#555; }
   html, body{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
   .paste-zone, .btn, .no-print, .section-toggle-btn, .detail-toggle, .toast{display:none !important;}
-  body{background:#fff; padding:0; font-size:9.8px;}
+  body{background:#fff; padding:0; font-size:12.8px;}
   .wrap{max-width:100%; padding:0; margin-top:3mm; margin-left:0; margin-right:0; margin-bottom:0;}
   .card{box-shadow:none; border:1px solid #ddd;}
   .section{margin-bottom:5px;}
@@ -437,10 +403,10 @@ table.hp-table mark.hp-max-hl{
   .brand-mark{width:20px; height:20px;}
   .brand-text h1{font-size:12.5px;}
   .brand-text span{font-size:8.3px;}
-  .doc-number{display:inline-block !important; font-size:15.6px !important; color:#000 !important; font-weight:800 !important; margin-left:4px; align-self:flex-end; padding:1px 7px; background:#eef0f4; border-radius:4px; letter-spacing:.02em;}
+  .doc-number{display:inline-block !important; font-size:15.6px !important; color:#000 !important; font-weight:800 !important; margin-left:2px; align-self:flex-end; padding:1px 7px; background:#eef0f4; border-radius:4px; letter-spacing:.02em;}
   .doc-number.doc-number-hidden{display:none !important;}
-  .hp-header-summary{display:flex !important; align-items:center; gap:5px; align-self:flex-end; margin-left:6px; font-size:12.5px !important; font-weight:700 !important; color:#000 !important;}
-  .hp-header-summary .delta-badge{font-size:10.4px; padding:2px 7px; border-radius:10px; font-weight:600;}
+  .hp-header-summary{display:flex !important; align-items:center; gap:5px; align-self:flex-end; margin-left:2px; font-size:16.5px !important; font-weight:700 !important; color:#000 !important;}
+  .hp-header-summary .delta-badge{font-size:14.4px; padding:2px 5px; border-radius:10px; font-weight:600;}
   .toolbar-actions, #cloudStatus{display:none !important;}
   .period-label, .period-sep, .period-picker input[type="date"]{display:none !important;}
   .period-picker{font-size:9.9px; gap:0;}
@@ -454,25 +420,25 @@ table.hp-table mark.hp-max-hl{
   #tab-longform{padding-top:4px;}
   .summary-grid{display:grid !important; grid-template-columns:repeat(5, 1fr) !important; gap:5px !important;}
   .summary-card{padding:7px 7px;}
-  .summary-card b{font-size:13.5px;}
-  .summary-card label{font-size:8.8px; margin-bottom:5px;}
-  .summary-card .sub{font-size:7.8px; line-height:1.4; margin-top:4px;}
-  .summary-card .sub.sub-breakdown{font-size:8.8px;}
+  .summary-card b{font-size:16.5px;}
+  .summary-card label{font-size:11.8px; margin-bottom:5px;}
+  .summary-card .sub{font-size:10.8px; line-height:1.4; margin-top:4px;}
+  .summary-card .sub.sub-breakdown{font-size:11.8px;}
   .wi-list{margin-top:2px;}
   .wi-line{margin-bottom:1px;}
-  .wi-row{font-size:6.2px; gap:0.4px; row-gap:0.5px;}
-  .wi-row b{font-size:11.4px;}
-  .wi-idx{font-size:5.4px; min-width:5px;}
-  .wi-title{font-size:7.5px; max-width:150px;}
-  .wi-empty{font-size:6.8px;}
-  .wi-tag{font-size:5.7px; padding:0.3px 2px; border-radius:3px; max-width:22px;}
-  .type-badge{font-size:7.3px; padding:0.5px 5px;}
+  .wi-row{font-size:9.2px; gap:0.4px; row-gap:0.5px;}
+  .wi-row b{font-size:14.4px;}
+  .wi-idx{font-size:8.4px; min-width:5px;}
+  .wi-title{font-size:10.5px; max-width:150px;}
+  .wi-empty{font-size:9.8px;}
+  .wi-tag{font-size:8.7px; padding:0.3px 2px; border-radius:3px; max-width:22px;}
+  .type-badge{font-size:10.3px; padding:0.5px 5px;}
   .wi-lbl-full{display:none;}
   .wi-lbl-print{display:inline;}
 
   .section-head{margin-bottom:5px; gap:6px;}
-  .section-head h2{font-size:12px;}
-  .section-head .eyebrow{font-size:7.3px;}
+  .section-head h2{font-size:15px;}
+  .section-head .eyebrow{font-size:10.3px;}
   .section-body.collapsed{display:block !important;}
   .section-desc{display:none;}
   .hp-table-wrap, .insight-list{max-height:none !important; overflow:visible !important;}
@@ -481,16 +447,16 @@ table.hp-table mark.hp-max-hl{
   .channel-row{display:grid !important; grid-template-columns:1fr 1fr !important; gap:8px; margin-bottom:3px;}
   .channel-card{padding:4px 10px;}
   .channel-card-head{margin-bottom:3px;}
-  .channel-badge{font-size:6.8px; padding:1px 5px;}
-  .channel-card-head .ch-name{font-size:9.4px;}
-  .channel-stat-main label{font-size:8.3px;}
+  .channel-badge{font-size:9.8px; padding:1px 5px;}
+  .channel-card-head .ch-name{font-size:12.4px;}
+  .channel-stat-main label{font-size:11.3px;}
   .channel-stat-main input.big-num{font-size:14.6px; line-height:1.1;}
-  .prev-input-wrap input{font-size:9.4px; padding:2px 5px;}
-  .delta-badge{font-size:8.3px; padding:2px 6px;}
+  .prev-input-wrap input{font-size:12.4px; padding:2px 5px;}
+  .delta-badge{font-size:11.3px; padding:2px 6px;}
 
   .content-type-columns{gap:2px;}
   .tab-panel{margin-bottom:2px !important; padding-top:0; border-top:none;}
-  .content-subtitle{font-size:9.9px; margin-bottom:2px;}
+  .content-subtitle{font-size:12.9px; margin-bottom:2px;}
   .content-subtitle .cnt-badge{display:none;}
 
   /* 롱폼/SRC/카드뉴스까지는 억지로 페이지를 나누지 않고, 앞의 카드들이 자연스럽게
@@ -507,41 +473,52 @@ table.hp-table mark.hp-max-hl{
   .post-table-wrap{overflow:visible;}
   .post-table{min-width:0 !important; width:100%; table-layout:fixed;}
   .post-table th, .post-table td{padding:2px 2px; vertical-align:middle; overflow:hidden;}
-  .post-table th{font-size:7.9px;}
+  .post-table td.title-cell{overflow:visible;}
+  .post-table th{font-size:10.9px;}
   .post-table td:first-child, .post-table th:first-child{width:5%;}
-  .post-table input{padding:1.5px 2px !important; font-size:8.5px !important;}
-  .post-table select{padding:1.5px 2px !important; font-size:8.5px !important; -webkit-appearance:none !important; -moz-appearance:none !important; appearance:none !important; background-image:none !important;}
-  .post-table input[type="date"]{width:100%; min-width:0; padding:1px 0 !important; font-size:7.9px !important; text-align:left;}
+  .post-table input{padding:1.5px 2px !important; font-size:11.5px !important;}
+  .post-table select{padding:1.5px 2px !important; font-size:11.5px !important; -webkit-appearance:none !important; -moz-appearance:none !important; appearance:none !important; background-image:none !important;}
+  .post-table input[type="date"]{width:100%; min-width:0; padding:1px 0 !important; font-size:10.9px !important; text-align:left;}
   .post-table input[type="date"]::-webkit-calendar-picker-indicator{display:none !important;}
   .post-table input[type="text"]{overflow:hidden; text-overflow:ellipsis;}
-  .post-idx-cell{font-size:7.9px; width:5%;}
+  .post-idx-cell{font-size:10.9px; width:5%;}
   .ratio-cell{flex-wrap:nowrap; white-space:nowrap; gap:3px !important;}
-  .ratio-cell input{width:29px !important; min-width:0 !important; font-size:8.5px !important; flex-shrink:0; padding:1px !important;}
+  .ratio-cell input{width:29px !important; min-width:0 !important; font-size:11.5px !important; flex-shrink:0; padding:1px !important;}
   .mini-bar{width:13px !important; height:5px; flex-shrink:0;}
-  .mention-toggle{font-size:7.9px !important; padding:1.5px 5px !important;}
+  .mention-toggle{font-size:10.9px !important; padding:1.5px 5px !important;}
   .view-max-mark{left:5px !important; bottom:2.5px !important; height:4px !important;}
   .full-label{display:none;}
   .print-label{display:inline;}
+  .title-input{display:none !important;}
+  .title-print{display:block; white-space:normal; overflow:visible; word-break:break-word; line-height:1.25;}
 
   /* 롱폼·쇼츠·카드뉴스(1페이지): 표 글씨 크기 확대 — Blog(2페이지)는 기존 크기 유지 */
-  #tab-longform .content-subtitle, #tab-shorts .content-subtitle, #tab-cardnews .content-subtitle{font-size:11.4px;}
-  #tab-longform .post-table th, #tab-shorts .post-table th, #tab-cardnews .post-table th{font-size:9.6px;}
-  #tab-longform .post-idx-cell, #tab-shorts .post-idx-cell, #tab-cardnews .post-idx-cell{font-size:9.6px;}
-  #tab-longform .post-table input, #tab-shorts .post-table input, #tab-cardnews .post-table input{font-size:10.2px !important;}
-  #tab-longform .post-table input[type="date"], #tab-shorts .post-table input[type="date"], #tab-cardnews .post-table input[type="date"]{font-size:9.4px !important;}
-  #tab-shorts .ratio-cell input, #tab-cardnews .ratio-cell input{width:33px !important; font-size:10.2px !important;}
+  #tab-shorts .content-subtitle, #tab-cardnews .content-subtitle{font-size:14.4px;}
+  #tab-shorts .post-table th, #tab-cardnews .post-table th{font-size:12.6px;}
+  #tab-shorts .post-idx-cell, #tab-cardnews .post-idx-cell{font-size:12.6px;}
+  #tab-shorts .post-table input, #tab-cardnews .post-table input, #tab-shorts .title-print, #tab-cardnews .title-print{font-size:13.2px !important;}
+  #tab-shorts .post-table input[type="date"], #tab-cardnews .post-table input[type="date"]{font-size:12.4px !important;}
+  #tab-shorts .ratio-cell input, #tab-cardnews .ratio-cell input{width:33px !important; font-size:13.2px !important;}
+
+  /* 롱폼: SRC(숏폼)의 기본(5줄 이하) 폰트 크기가 아니라, SRC가 5줄을 넘겨
+     축소되었을 때(shorts-many)의 작은 크기로 고정해 둘의 글씨 크기를 맞춘다. */
+  #tab-longform .content-subtitle{font-size:12.9px;}
+  #tab-longform .post-table th{font-size:10.9px;}
+  #tab-longform .post-idx-cell{font-size:10.9px;}
+  #tab-longform .post-table input, #tab-longform .title-print{font-size:11.5px !important;}
+  #tab-longform .post-table input[type="date"]{font-size:10.9px !important;}
 
   /* SRC은 '+ 행 추가' 버튼으로 5줄을 넘어(최대 7줄) 늘어날 수 있다.
      위에서 페이지1용으로 확대해둔 글씨 크기를 그대로 쓰면 세로 공간이 부족해져
      페이지가 밀리므로, 5줄을 초과하면(JS에서 #tab-shorts에 shorts-many 클래스를
      붙임) 기본 크기 수준으로 되돌려 절약한다. */
-  #tab-shorts.shorts-many .content-subtitle{font-size:9.9px;}
-  #tab-shorts.shorts-many .post-table th{font-size:7.9px;}
-  #tab-shorts.shorts-many .post-idx-cell{font-size:7.9px;}
-  #tab-shorts.shorts-many .post-table input{font-size:8.5px !important;}
-  #tab-shorts.shorts-many .post-table input[type="date"]{font-size:7.9px !important;}
+  #tab-shorts.shorts-many .content-subtitle{font-size:12.9px;}
+  #tab-shorts.shorts-many .post-table th{font-size:10.9px;}
+  #tab-shorts.shorts-many .post-idx-cell{font-size:10.9px;}
+  #tab-shorts.shorts-many .post-table input, #tab-shorts.shorts-many .title-print{font-size:11.5px !important;}
+  #tab-shorts.shorts-many .post-table input[type="date"]{font-size:10.9px !important;}
   #tab-shorts.shorts-many .post-table th, #tab-shorts.shorts-many .post-table td{padding:1.5px 2px;}
-  #tab-shorts.shorts-many .ratio-cell input{width:29px !important; font-size:8.5px !important;}
+  #tab-shorts.shorts-many .ratio-cell input{width:29px !important; font-size:11.5px !important;}
 
   /* 컬럼별 고정폭: 표 전체 컬럼(인덱스~게시일)을 표 종류와 무관하게 항상 5%/40%/14%로
      통일한다. Chrome은 table-layout:fixed 상태에서 %와 px를 섞어 쓰면(합이 100%가 안 맞을 때)
@@ -575,9 +552,9 @@ table.hp-table mark.hp-max-hl{
 
   /* 쇼츠 유튜브 vs 인스타그램 조회수 비교 그래프 (인쇄용) */
   #tab-shorts .chart-box{padding:4px 8px; display:flex; flex-direction:column; margin-top:3px; height:190px;}
-  #tab-shorts .chart-title{font-size:9.4px; margin-bottom:2px; flex:0 0 auto;}
+  #tab-shorts .chart-title{font-size:12.4px; margin-bottom:2px; flex:0 0 auto;}
   #tab-shorts.shorts-many .chart-box{height:165px; margin-top:2px;}
-  #tab-shorts.shorts-many .chart-title{font-size:8.3px; margin-bottom:1px;}
+  #tab-shorts.shorts-many .chart-title{font-size:11.3px; margin-bottom:1px;}
   .post-card{padding:6px 8px !important;}
 
   .hp-main-row{
@@ -597,23 +574,20 @@ table.hp-table mark.hp-max-hl{
   .hp-mention-card{padding:6px 8px !important;}
   .hp-stat{padding:3px 5px !important; flex:1 1 0; min-width:0;}
   .hp-stat label{font-size:6.9px; white-space:nowrap;}
-  .hp-stat b{font-size:10.4px; white-space:nowrap;}
+  .hp-stat b{font-size:13.4px; white-space:nowrap;}
   .hp-stat .sub{font-size:6.2px !important; line-height:1.25 !important; margin-top:1px !important; white-space:nowrap !important; overflow:hidden; text-overflow:ellipsis;}
   table.hp-table th, table.hp-table td{padding:1.5px 4px !important; font-size:8.5px;}
   .insight-list{margin-top:6px !important;}
   /* 게시물 제목이 긴 경우 항목이 2줄로 늘어나 지면을 많이 차지하지 않도록,
      인쇄 시에는 항목 높이를 한 줄로 고정하고 넘치는 텍스트는 잘라낸다. */
-  .insight-list li{padding:2px 6px; font-size:8.9px; line-height:1.3; margin-bottom:1px; height:17px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;}
-  .insight-list li .tag{font-size:7.1px; padding:2px 6px; border-radius:4px;}
+  .insight-list li{padding:2px 6px; font-size:11.9px; line-height:1.3; margin-bottom:1px; white-space:normal; overflow:visible;}
+  .insight-list li .tag{font-size:10.1px; padding:2px 6px; border-radius:4px;}
   .insight-list li.hp-top-impact{background:#fff4d6 !important; border:1px solid #f0b93d;}
-  .insight-list li .hp-top-badge{font-size:6.2px; padding:1px 4px; border-radius:4px;}
-  .legend-row{margin-top:4px; font-size:8.3px;}
+  .insight-list li .hp-top-badge{font-size:9.2px; padding:1px 4px; border-radius:4px;}
+  .legend-row{margin-top:4px; font-size:11.3px;}
 
   /* 담당자 분석 의견: 내용 길이에 맞춰 자연스럽게 높이가 늘어나도록 두고,
      카드 자체가 페이지 중간에서 잘리지 않게만 한다. */
-  .section-opinion{margin-top:3mm;}
-  .opinion-card{padding:4px 7px; break-inside:avoid; page-break-inside:avoid;}
-  .opinion-box{min-height:0; padding:4px 6px; font-size:9.4px; line-height:1.5; border-color:#ddd; background:#fff;}
 }
 @media (max-width:1220px){
   .content-type-row{flex-direction:column;}
@@ -682,38 +656,6 @@ table.hp-table mark.hp-max-hl{
 </div>
 
 <div class="wrap">
-
-  <!-- ============ 담당자 분석 의견 (최상단) ============ -->
-  <div class="section section-opinion">
-    <div class="section-head collapsible" onclick="toggleSection('opinion')">
-      <span class="eyebrow">MEMO</span>
-      <h2>담당자 분석 의견</h2>
-      <span class="section-toggle-btn" id="toggle-opinion">−</span>
-    </div>
-    <div class="section-body" id="body-opinion">
-      <div class="card opinion-card">
-        <div class="format-toolbar no-print" id="opinionFormatToolbar">
-          <div class="format-toolbar-group">
-            <span class="format-toolbar-label">글자색</span>
-            <button type="button" class="swatch-btn" style="background:#1c1c22" title="검정" onmousedown="event.preventDefault()" onclick="applyOpinionColor('#1c1c22')"></button>
-            <button type="button" class="swatch-btn" style="background:#eb5757" title="빨강" onmousedown="event.preventDefault()" onclick="applyOpinionColor('#eb5757')"></button>
-            <button type="button" class="swatch-btn" style="background:#2f80ed" title="파랑" onmousedown="event.preventDefault()" onclick="applyOpinionColor('#2f80ed')"></button>
-          </div>
-          <div class="format-toolbar-divider"></div>
-          <div class="format-toolbar-group">
-            <span class="format-toolbar-label">형광펜</span>
-            <button type="button" class="swatch-btn" style="background:#fff3a3" title="노랑" onmousedown="event.preventDefault()" onclick="applyOpinionHighlight('#fff3a3')"></button>
-            <button type="button" class="swatch-btn" style="background:#ffd0d0" title="빨강" onmousedown="event.preventDefault()" onclick="applyOpinionHighlight('#ffd0d0')"></button>
-            <button type="button" class="swatch-btn" style="background:#cde3fb" title="파랑" onmousedown="event.preventDefault()" onclick="applyOpinionHighlight('#cde3fb')"></button>
-            <button type="button" class="swatch-btn is-clear" title="형광펜 지우기" onmousedown="event.preventDefault()" onclick="applyOpinionHighlight('transparent')"></button>
-          </div>
-          <div class="format-toolbar-divider"></div>
-          <button type="button" class="format-clear-btn" onmousedown="event.preventDefault()" onclick="clearOpinionFormat()">서식 지우기</button>
-        </div>
-        <div class="opinion-box" id="opinionBox" contenteditable="true" data-placeholder="담당자 분석 의견을 입력하세요..." oninput="onOpinionInput()"></div>
-      </div>
-    </div>
-  </div>
 
   <!-- ============ SNS 현황 ============ -->
   <div class="section section-sns">
@@ -918,7 +860,6 @@ function reportHasContent(data){
   if(data.yt && (data.yt.followers || data.yt.prev)) return true;
   if(data.ig && (data.ig.followers || data.ig.prev)) return true;
   if(data.homepage && data.homepage.rows && data.homepage.rows.length) return true;
-  if(data.opinion && String(data.opinion).trim()) return true;
   for(const ct of CONTENT_TYPES){
     const list = (data.posts && data.posts[ct.key]) || [];
     for(const p of list){
@@ -1010,8 +951,7 @@ function initState(){
       cardnews: Array.from({length:5}, ()=>emptyPost(CONTENT_TYPES[2])),
       blog:     Array.from({length:5}, ()=>emptyPost(CONTENT_TYPES[3])),
     },
-    homepage:{rows:[]},
-    opinion:''
+    homepage:{rows:[]}
   };
 }
 function escAttr(s){
@@ -1334,125 +1274,6 @@ function renderAll(){
   refreshShortsChart();
   renderHomepage();
   refreshSummary();
-  const opinionBox = document.getElementById('opinionBox');
-  if(opinionBox){
-    const opinionHtml = opinionToDisplayHtml(state.opinion || '');
-    if(opinionBox.innerHTML !== opinionHtml) opinionBox.innerHTML = opinionHtml;
-  }
-}
-
-// 예전 버전은 일반 텍스트(줄바꿈 \n)로 저장했고, 글자색/형광펜 기능 추가 이후에는
-// HTML(색상 span 포함)로 저장한다. 이미 HTML로 저장된 값은 그대로 쓰고, 예전 일반
-// 텍스트 값은 이스케이프해서 줄바꿈만 <br>로 살려 보여준다(하위 호환).
-function opinionToDisplayHtml(raw){
-  if(!raw) return '';
-  if(/<[a-z][\s\S]*>/i.test(raw)) return raw;
-  return escAttr(raw).replace(/\n/g, '<br>');
-}
-function onOpinionInput(){
-  state.opinion = document.getElementById('opinionBox').innerHTML;
-  scheduleAutoSave();
-}
-function opinionEnsureFocus(){
-  const el = document.getElementById('opinionBox');
-  if(!el) return null;
-  const sel = window.getSelection();
-  const inside = sel && sel.rangeCount > 0 && el.contains(sel.getRangeAt(0).commonAncestorContainer);
-  if(!inside){
-    el.focus();
-    const range = document.createRange();
-    range.selectNodeContents(el);
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-  return el;
-}
-function opinionGetSelRange(){
-  const sel = window.getSelection();
-  if(!sel || sel.rangeCount === 0) return null;
-  return {sel, range: sel.getRangeAt(0)};
-}
-// 커서가 서식(색/형광펜) span의 경계에 있을 때 그 span '안쪽'에 마커를 넣으면
-// 중첩되어 배경색이 어긋나 보이는 문제가 있어, span 바깥의 형제 위치로 삽입 지점을
-// 옮겨준다.
-function opinionEscapeStyledBoundary(root, range){
-  let container = range.startContainer;
-  let offset = range.startOffset;
-  while(container && container !== root){
-    const len = container.nodeType === 3 ? container.length : container.childNodes.length;
-    const parent = container.parentNode;
-    if(!parent) break;
-    if(offset === len){
-      const idx = Array.prototype.indexOf.call(parent.childNodes, container);
-      container = parent; offset = idx + 1;
-    } else if(offset === 0){
-      const idx = Array.prototype.indexOf.call(parent.childNodes, container);
-      container = parent; offset = idx;
-    } else {
-      break;
-    }
-  }
-  const r = document.createRange();
-  r.setStart(container, offset);
-  r.collapse(true);
-  return r;
-}
-// 커서만 있고 선택 영역이 없을 때, 폭 0(zero-width) 글자를 원하는 서식으로 심어
-// 이어서 입력하는 글자가 그 서식을 물려받도록 한다.
-function opinionInsertTypingMarker(el, range, styleProps){
-  const escapedRange = opinionEscapeStyledBoundary(el, range);
-  const span = document.createElement('span');
-  Object.assign(span.style, styleProps);
-  span.appendChild(document.createTextNode('​'));
-  escapedRange.insertNode(span);
-  const sel = window.getSelection();
-  const newRange = document.createRange();
-  newRange.setStart(span.firstChild, 1);
-  newRange.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(newRange);
-}
-function applyOpinionColor(color){
-  const el = opinionEnsureFocus();
-  if(!el) return;
-  const info = opinionGetSelRange();
-  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
-  if(info && info.range.collapsed){
-    opinionInsertTypingMarker(el, info.range, {color});
-  } else {
-    document.execCommand('foreColor', false, color);
-  }
-  onOpinionInput();
-}
-function applyOpinionHighlight(color){
-  const el = opinionEnsureFocus();
-  if(!el) return;
-  const info = opinionGetSelRange();
-  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
-  if(info && info.range.collapsed){
-    opinionInsertTypingMarker(el, info.range, {backgroundColor:color});
-  } else {
-    const cmd = document.queryCommandSupported && document.queryCommandSupported('hiliteColor') ? 'hiliteColor' : 'backColor';
-    document.execCommand(cmd, false, color);
-  }
-  onOpinionInput();
-}
-function clearOpinionFormat(){
-  const el = opinionEnsureFocus();
-  if(!el) return;
-  const info = opinionGetSelRange();
-  try{ document.execCommand('styleWithCSS', false, true); }catch(e){}
-  document.execCommand('removeFormat');
-  const sel2 = window.getSelection();
-  if(info && info.range.collapsed && sel2 && sel2.rangeCount){
-    opinionInsertTypingMarker(el, sel2.getRangeAt(0), {color:'#1c1c22', backgroundColor:'transparent'});
-  } else {
-    document.execCommand('foreColor', false, '#1c1c22');
-    const hiliteCmd = document.queryCommandSupported && document.queryCommandSupported('hiliteColor') ? 'hiliteColor' : 'backColor';
-    document.execCommand(hiliteCmd, false, 'transparent');
-  }
-  onOpinionInput();
 }
 
 let _periodChangeTimer = null;
@@ -1642,8 +1463,8 @@ function renderPostGrid(type){
           <button type="button" class="reorder-btn" onclick="movePost('${type}',${idx},1)" ${idx===state.posts[type].length-1 ? 'disabled' : ''} title="아래로 이동">▼</button>
         </span><button type="button" class="row-reset-btn no-print" onclick="resetPost('${type}',${idx})" title="이 줄만 초기화">↺</button><button type="button" class="row-delete-btn no-print" onclick="deletePost('${type}',${idx})" title="이 줄 삭제">✕</button>
       </td>
-      <td><input type="text" value="${escAttr(p.title)}" placeholder="${ct.label} 제목"
-            oninput="updatePostField('${type}',${idx},'title',this.value)"></td>
+      <td class="title-cell"><input type="text" class="title-input" value="${escAttr(p.title)}" placeholder="${ct.label} 제목"
+            oninput="updatePostField('${type}',${idx},'title',this.value); document.getElementById('titlepr-${type}-${idx}').textContent=this.value;"><span class="title-print" id="titlepr-${type}-${idx}">${escAttr(p.title)}</span></td>
       <td><input type="date" value="${escAttr(p.date)}"
             oninput="updatePostField('${type}',${idx},'date',this.value)"
             onchange="refreshHomepageChart(periodHomepageRows()); refreshHomepageInsights(periodHomepageRows());"></td>
@@ -2113,7 +1934,7 @@ function buildHomepageChartSVG(rows, markers, labels, dataV, dataPV){
     const labelY = y - 2;
     barLabelY[i] = labelY;
     bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" fill="#adb5c4" rx="1.5"/>`;
-    barLabelsSvg += `<text x="${(x+barW/2).toFixed(1)}" y="${labelY.toFixed(1)}" font-size="5.6" text-anchor="middle" fill="#586274" stroke="#fff" stroke-width="2.4" paint-order="stroke">${Number(dataPV[i]).toLocaleString()}</text>`;
+    barLabelsSvg += `<text x="${(x+barW/2).toFixed(1)}" y="${labelY.toFixed(1)}" font-size="10.6" text-anchor="middle" fill="#586274" stroke="#fff" stroke-width="2.4" paint-order="stroke">${Number(dataPV[i]).toLocaleString()}</text>`;
   }
 
   // 선: 방문자 (왼쪽 축 기준)
@@ -2137,7 +1958,7 @@ function buildHomepageChartSVG(rows, markers, labels, dataV, dataPV){
       labelY = Math.min(labelY, barLabelY[i]) - MIN_LABEL_GAP;
     }
     dots += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.4" fill="#2f80ed"/>`;
-    dotLabelsSvg += `<text x="${p[0].toFixed(1)}" y="${labelY.toFixed(1)}" font-size="5.6" text-anchor="middle" fill="#2f80ed" font-weight="400" stroke="#fff" stroke-width="2.4" paint-order="stroke">${Number(dataV[i]).toLocaleString()}</text>`;
+    dotLabelsSvg += `<text x="${p[0].toFixed(1)}" y="${labelY.toFixed(1)}" font-size="10.6" text-anchor="middle" fill="#2f80ed" font-weight="400" stroke="#fff" stroke-width="2.4" paint-order="stroke">${Number(dataV[i]).toLocaleString()}</text>`;
   });
 
   // 발행일 마커 (콘텐츠 유형별 색상 점, 같은 날 여러 개면 위로 쌓기)
@@ -2488,7 +2309,6 @@ function applyStateFromData(data){
     });
   }
   state.homepage = data.homepage || state.homepage;
-  state.opinion = (data.opinion !== undefined && data.opinion !== null) ? data.opinion : state.opinion;
 }
 
 /* 게시일(date)이 채워져 있는데 [start, end] 범위 밖인 글은 이번 기간의 데이터가
