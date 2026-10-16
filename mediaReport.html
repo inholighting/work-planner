@@ -88,9 +88,9 @@ input[type="file"]{display:none;}
 .post-card{padding:10px 12px;}
 .content-type-row > .chart-box{flex:1 1 0; min-width:0; margin-bottom:0;}
 .hp-main-row{
-  display:grid; gap:16px; align-items:stretch; margin-top:10px;
-  grid-template-columns:1.1fr 1fr;
-  grid-template-areas: "table chart";
+  display:grid; gap:16px; align-items:start; margin-top:10px;
+  grid-template-columns:1fr 1fr;
+  grid-template-areas: "stats table";
 }
 .hp-main-row > *{min-width:0;}
 .hp-table-wrap{grid-area:table;}
@@ -221,8 +221,9 @@ table.post-table th.th-ratio{text-align:left;}
 .chart-box{padding:10px 12px;margin-bottom:0;}
 .chart-canvas-wrap{position:relative; width:100%; height:150px; overflow:visible;}
 .trend-card{margin-bottom:12px; display:flex; flex-direction:column;}
-.trend-chart-wrap{height:260px;}
+.trend-chart-wrap{height:340px;}
 .trend-insights{margin-top:10px; padding-top:8px; border-top:1px solid #f0f0f3;}
+.daily-input-wrap + .trend-insights{margin-top:12px;}
 .trend-insights .chart-title{margin-bottom:2px;}
 .trend-insights .insight-list{margin-top:4px;}
 .lg-line{display:inline-block; width:18px; height:0; border-top:2.5px solid; vertical-align:middle; margin-right:4px;}
@@ -266,11 +267,11 @@ table.hp-table td:first-child{font-family:var(--font); font-weight:400;}
 table.hp-table tr:last-child td{border-bottom:none;}
 table.hp-table tfoot td{font-weight:400; border-top:1.5px solid var(--text); background:var(--surface-2);}
 .hp-stat-row{display:grid; grid-template-columns:1.1fr 1fr; gap:16px; margin:10px 0 4px;}
-#hpStatRow{grid-template-columns:repeat(5,1fr);}
+/* 홈페이지 요약 카드 5개: 일자별 표 왼쪽에 2열로 배치(마지막 카드는 2칸 차지) */
+#hpStatRow{grid-area:stats; grid-template-columns:repeat(2,1fr); gap:8px; margin:0; align-content:start;}
 #hpStatRow .hp-stat-group{display:contents;}
 #hpStatRow .hp-stat{min-width:0;}
-#hpStatRow .hp-stat label{font-size:8.6px;}
-#hpStatRow .hp-stat b{font-size:14px;}
+#hpStatRow .hp-stat-wide{grid-column:span 2;}
 .hp-stat-group{display:flex; gap:8px; flex-wrap:wrap; min-width:0;}
 .hp-stat{flex:1;min-width:90px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
 .hp-stat label{font-size:10.3px;color:var(--text-light);font-weight:400;text-transform:uppercase;letter-spacing:.02em;}
@@ -365,11 +366,11 @@ table.hp-table mark.hp-max-hl{
 .history-manager-empty{font-size:13.5px; color:var(--text-light); padding:8px 2px;}
 
 /* ===== Print (A4 세로형, 2페이지 목표) ===== */
-@page{ size:A4 portrait; margin:19mm 9mm 18mm 9mm; }
+@page{ size:A4 portrait; margin:11mm 9mm 13mm 9mm; }
 /* 1페이지는 아래 여백을 조금 더 넉넉하게(위 여백은 모든 페이지 공통) */
-@page :first{ margin:19mm 9mm 20mm 9mm; }
+@page :first{ margin:11mm 9mm 13mm 9mm; }
 /* 페이지 우측 하단에 1/2, 2/2 형식의 쪽 번호 표시 (아래쪽 여백 확보) */
-@page{ @bottom-right{ content: counter(page) "/" counter(pages); font-size:25.7px; color:#333; padding-bottom:3mm; } }
+@page{ @bottom-right{ content: counter(page) "/" counter(pages); font-size:12px; color:#333; padding-bottom:2mm; } }
 @media print{
   /* 화면용 --text/--text-muted/--text-light는 미세하게 푸른빛이 도는 색(예: #1c1c22 -
      R,G보다 B가 높음)이었다. 이런 색은 인쇄 시 검정 토너만으로 표현되지 않고
@@ -451,8 +452,8 @@ table.hp-table mark.hp-max-hl{
   .wi-lbl-full{display:none;}
   .wi-lbl-print{display:inline;}
 
-  .section-head{margin-bottom:5px; gap:6px;}
-  .section-head h2{font-size:15px;}
+  .section-head{margin-bottom:3px; gap:6px;}
+  .section-head h2{font-size:13.5px;}
   .section-head .eyebrow{font-size:10.3px;}
   .section-body.collapsed{display:block !important;}
   .section-desc{display:none;}
@@ -480,14 +481,17 @@ table.hp-table mark.hp-max-hl{
      잘리지는 않는다). Blog는 요청에 따라 항상 새 페이지에서 시작하고, "홈페이지
      현황"(02)은 그 뒤에 강제 개행 없이 자연스럽게 이어진다(같은 페이지에 들어가면
      같은 페이지, 넘치면 자동으로 다음 페이지). */
-  #tab-blog{page-break-before:always; break-before:page;}
-  .section-hp{margin-top:3mm; margin-bottom:0;}
+  /* 한 페이지 인쇄: Blog도 강제 줄바꿈 없이 이어서 배치한다 */
+  .section-hp{margin-top:1.5mm; margin-bottom:3px;}
+  .hp-card{padding:5px 8px !important;}
+  .section-content{margin-top:1mm;}
 
   /* 게시물 표: 고정 레이아웃 + 컬럼별 폭 지정으로 가로 넘침 방지 */
   .post-row.empty{display:none !important;}
   .post-table-wrap{overflow:visible;}
   .post-table{min-width:0 !important; width:100%; table-layout:fixed;}
-  .post-table th, .post-table td{padding:2px 2px; vertical-align:middle; overflow:hidden;}
+  .post-table th, .post-table td{padding:1px 2px; vertical-align:middle; overflow:hidden;}
+  .tab-panel.all-empty{display:none !important;}
   .post-table td.title-cell{overflow:visible;}
   .post-table th{font-size:10.9px;}
   .post-table td:first-child, .post-table th:first-child{width:5%;}
@@ -507,13 +511,7 @@ table.hp-table mark.hp-max-hl{
   .title-input{display:none !important;}
   .title-print{display:block; white-space:normal; overflow:visible; word-break:break-word; line-height:1.25;}
 
-  /* 롱폼·쇼츠·카드뉴스(1페이지): 표 글씨 크기 확대 — Blog(2페이지)는 기존 크기 유지 */
-  #tab-shorts .content-subtitle, #tab-cardnews .content-subtitle{font-size:14.4px;}
-  #tab-shorts .post-table th, #tab-cardnews .post-table th{font-size:12.6px;}
-  #tab-shorts .post-idx-cell, #tab-cardnews .post-idx-cell{font-size:12.6px;}
-  #tab-shorts .post-table input, #tab-cardnews .post-table input, #tab-shorts .title-print, #tab-cardnews .title-print{font-size:13.2px !important;}
-  #tab-shorts .post-table input[type="date"], #tab-cardnews .post-table input[type="date"]{font-size:12.4px !important;}
-  #tab-shorts .ratio-cell input, #tab-cardnews .ratio-cell input{width:33px !important; font-size:13.2px !important;}
+  /* 한 페이지 인쇄를 위해 SRC·카드뉴스 표도 롱폼과 같은 작은 글씨 크기를 쓴다 */
 
   /* 롱폼: SRC(숏폼)의 기본(5줄 이하) 폰트 크기가 아니라, SRC가 5줄을 넘겨
      축소되었을 때(shorts-many)의 작은 크기로 고정해 둘의 글씨 크기를 맞춘다. */
@@ -568,38 +566,38 @@ table.hp-table mark.hp-max-hl{
   /* 일별 추이 그래프 (인쇄용) — 삭제된 SRC 조회수 비교 그래프 자리만큼의 높이 */
   .trend-card{padding:4px 8px; margin-bottom:4px;}
   .trend-card .print-mini-chart{flex:0 0 auto !important; height:140px;}
-  .trend-insights{margin-top:3px; padding-top:3px;}
+  .trend-insights{margin-top:2px; padding-top:2px;}
   .trend-insights .chart-title{font-size:11.3px; margin-bottom:0;}
   .trend-insights .insight-list{margin-top:2px !important;}
   .trend-card .chart-title{font-size:11.3px; margin-bottom:1px; flex:0 0 auto;}
   .trend-card .legend-row{margin-top:1px; font-size:10px; flex:0 0 auto;}
-  .post-card{padding:6px 8px !important;}
+  .post-card{padding:3px 8px !important;}
+  .post-table-wrap{margin-bottom:2px;}
 
   .hp-main-row{
-    grid-template-columns:1fr 200px !important;
-    grid-template-areas:"chart table" !important;
-    gap:6px; margin-top:4px;
+    grid-template-columns:1fr 1fr !important;
+    grid-template-areas:"stats table" !important;
+    gap:6px; margin-top:2px;
   }
   .hp-chart-card{max-width:none !important; margin-left:0 !important; margin-right:0 !important;}
-  .hp-table-wrap{padding:10px 4px 4px !important;}
+  .hp-table-wrap{padding:2px 4px 2px !important;}
   table.hp-table th:first-child, table.hp-table td:first-child{width:34%;}
   table.hp-table th:not(:first-child), table.hp-table td:not(:first-child){width:33%;}
   /* 합계 페이지뷰 ~ 가입/새글/댓글까지 5개 지표를 한 줄로 표시 */
-  .hp-stat-row{display:flex !important; flex-wrap:nowrap !important; gap:5px !important; margin:3px 0 !important;}
+  #hpStatRow{display:grid !important; grid-template-columns:repeat(2,1fr) !important; gap:4px !important; margin:0 !important;}
   .hp-stat-group{display:contents;}
-  #hpStatRow{display:none !important;}
   .hp-chart-wrap{height:128px !important;}
   .hp-mention-card{padding:6px 8px !important;}
-  .hp-stat{padding:3px 5px !important; flex:1 1 0; min-width:0;}
-  .hp-stat label{font-size:6.9px; white-space:nowrap;}
-  .hp-stat b{font-size:13.4px; white-space:nowrap;}
+  .hp-stat{padding:2px 6px !important; flex:1 1 0; min-width:0;}
+  .hp-stat label{font-size:8.8px; white-space:nowrap;}
+  .hp-stat b{font-size:12px; white-space:nowrap; margin-top:0;}
   .hp-stat .sub{font-size:6.2px !important; line-height:1.25 !important; margin-top:1px !important; white-space:nowrap !important; overflow:hidden; text-overflow:ellipsis;}
   table.hp-table th, table.hp-table td{padding:1.5px 4px !important; font-size:8.5px;}
   .insight-list{margin-top:6px !important;}
   /* 게시물 제목이 긴 경우 항목이 2줄로 늘어나 지면을 많이 차지하지 않도록,
      인쇄 시에는 항목 높이를 한 줄로 고정하고 넘치는 텍스트는 잘라낸다. */
-  .insight-list li{padding:2px 6px; font-size:11.9px; line-height:1.3; margin-bottom:1px; white-space:normal; overflow:visible;}
-  .insight-list li .tag{font-size:10.1px; padding:2px 6px; border-radius:4px;}
+  .insight-list li{padding:1px 6px; font-size:10.4px; line-height:1.25; margin-bottom:1px; white-space:normal; overflow:visible;}
+  .insight-list li .tag{font-size:9px; padding:1px 5px; border-radius:4px;}
   .insight-list li.hp-top-impact{background:#fff4d6 !important; border:1px solid #f0b93d;}
   .insight-list li .hp-top-badge{font-size:9.2px; padding:1px 4px; border-radius:4px;}
   .legend-row{margin-top:4px; font-size:11.3px;}
@@ -611,9 +609,7 @@ table.hp-table mark.hp-max-hl{
   .content-type-row{flex-direction:column;}
 }
 @media (max-width:640px){
-  .hp-main-row{grid-template-columns:1fr; grid-template-areas:"table" "chart";}
-  .hp-stat-row{grid-template-columns:1fr;}
-  #hpStatRow{grid-template-columns:1fr;}
+  .hp-main-row{grid-template-columns:1fr; grid-template-areas:"stats" "table";}
 }
 @media (max-width:720px){
   .channel-row{grid-template-columns:1fr;}
@@ -682,7 +678,7 @@ table.hp-table mark.hp-max-hl{
       <h2>SNS 현황</h2>
       <span class="section-toggle-btn" id="toggle-sns">−</span>
     </div>
-    <p class="section-desc">유튜브·인스타그램 팔로워 및 최근 콘텐츠 성과</p>
+    <p class="section-desc">유튜브 구독자·인스타그램 팔로워와 일별 추이</p>
     <div class="section-body" id="body-sns">
       <div class="channel-row">
         <div class="card channel-card yt">
@@ -739,13 +735,43 @@ table.hp-table mark.hp-max-hl{
           <span><span class="lg-line dashed" style="border-top-color:#e53935"></span>홈페이지 방문자</span>
           <span><span class="lg-line" style="border-top-color:#e53935"></span>홈페이지 뷰</span>
         </div>
+        <div class="daily-input-wrap no-print" id="dailyInputWrap"></div>
         <div class="trend-insights">
           <div class="chart-title">콘텐츠 발행일별 홈페이지 방문 변화</div>
           <ul class="insight-list" id="hpInsights"></ul>
         </div>
-        <div class="daily-input-wrap no-print" id="dailyInputWrap"></div>
       </div>
+    </div>
+  </div>
 
+  <!-- ============ 홈페이지 현황 ============ -->
+  <div class="section section-hp">
+    <div class="section-head collapsible" onclick="toggleSection('hp')">
+      <span class="eyebrow">02</span>
+      <h2>홈페이지 현황</h2>
+      <span class="section-toggle-btn" id="toggle-hp">−</span>
+    </div>
+    <p class="section-desc">관리자 페이지의 일자별 표를 그대로 복사해서 아래에 붙여넣으세요.</p>
+    <div class="section-body" id="body-hp">
+      <div class="card hp-card">
+        <div class="paste-zone no-print" id="pasteZone" contenteditable="true" data-placeholder="여기를 클릭하고 Ctrl+V(⌘V)로 붙여넣기 — 일자 / 주문수 / 매출액 / 전환율 / 페이지뷰 / 방문자 / ... (일자·페이지뷰·방문자만 사용)">
+        </div>
+        <div class="hp-main-row">
+          <div class="hp-stat-row" id="hpStatRow"></div>
+          <div class="hp-table-wrap" id="hpTableWrap"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 콘텐츠 현황 ============ -->
+  <div class="section section-content">
+    <div class="section-head collapsible" onclick="toggleSection('content')">
+      <span class="eyebrow">03</span>
+      <h2>콘텐츠 현황</h2>
+      <span class="section-toggle-btn" id="toggle-content">−</span>
+    </div>
+    <div class="section-body" id="body-content">
       <div class="content-type-columns">
         <div id="tab-longform" class="tab-panel">
           <h3 class="content-subtitle">롱폼 <span class="cnt-badge">Youtube</span></h3>
@@ -767,30 +793,6 @@ table.hp-table mark.hp-max-hl{
     </div>
   </div>
 
-  <!-- ============ 홈페이지 현황 ============ -->
-  <div class="section section-hp">
-    <div class="section-head collapsible" onclick="toggleSection('hp')">
-      <span class="eyebrow">02</span>
-      <h2>홈페이지 현황</h2>
-      <span class="section-toggle-btn" id="toggle-hp">−</span>
-    </div>
-    <p class="section-desc">관리자 페이지의 일자별 표를 그대로 복사해서 아래에 붙여넣으세요.</p>
-    <div class="section-body" id="body-hp">
-      <div class="card hp-card">
-        <div class="paste-zone no-print" id="pasteZone" contenteditable="true" data-placeholder="여기를 클릭하고 Ctrl+V(⌘V)로 붙여넣기 — 일자 / 주문수 / 매출액 / 전환율 / 페이지뷰 / 방문자 / ... (일자·페이지뷰·방문자만 사용)">
-        </div>
-        <div class="hp-stat-row" id="hpStatRow"></div>
-        <div class="hp-main-row">
-          <div class="hp-table-wrap" id="hpTableWrap"></div>
-          <div class="card chart-box hp-chart-card">
-            <div class="chart-title">방문자 · 페이지뷰 추이 (콘텐츠 발행일 표시)</div>
-            <div class="chart-canvas-wrap hp-chart-wrap"><canvas id="chart-homepage"></canvas></div><div class="print-mini-chart" id="printchart-homepage"></div>
-            <div class="legend-row" id="hpLegend"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
 </div>
 
@@ -1122,7 +1124,7 @@ Chart.register(barValueLabelPlugin);
 =================================================================== */
 const TREND_COLORS = {yt:'#1e9e4a', ytNet:'#1e9e4a', ig:'#4fb3f6', hp:'#e53935'};
 /* (아래에서부터의 비율) 홈페이지 / Instagram / Youtube 구독자 */
-const TREND_BANDS = {hp:[0.06,0.50], ig:[0.58,0.76], yt:[0.82,1.0]};
+const TREND_BANDS = {hp:[0.04,0.36], ig:[0.44,0.68], yt:[0.76,0.98]};
 const SIGNED_KEYS = {ytNet:true};
 
 function dayOfWeekStr(d){
@@ -1235,7 +1237,7 @@ function followerAxisRange(arr){
   const v = arr.filter(x => x != null);
   if(!v.length) return {min:0, max:1, empty:true};
   const mn = Math.min(...v), mx = Math.max(...v);
-  const pad = Math.max((mx - mn) * 0.3, mx * 0.001, 1);
+  const pad = Math.max((mx - mn) * 0.12, mx * 0.0003, 1);
   return {min: Math.max(0, Math.floor(mn - pad)), max: Math.ceil(mx + pad)};
 }
 function hpAxisRange(a, b){
@@ -1275,10 +1277,10 @@ function refreshTrendChart(){
   const data = {
     labels: s.labels,
     datasets: [
-      Object.assign({label:'Youtube 구독자',   data:s.yt,    borderColor:TREND_COLORS.yt,    backgroundColor:TREND_COLORS.yt, borderWidth:2.5, yAxisID:'yYt'}, common),
-      Object.assign({label:'Instagram 팔로워', data:s.ig,    borderColor:TREND_COLORS.ig,    backgroundColor:TREND_COLORS.ig, borderWidth:2.5, yAxisID:'yIg'}, common),
-      Object.assign({label:'HP 뷰',            data:s.hpPV,  borderColor:TREND_COLORS.hp,    backgroundColor:TREND_COLORS.hp, borderWidth:2,   yAxisID:'yHp'}, common),
-      Object.assign({label:'HP 방문자',        data:s.hpV,   borderColor:TREND_COLORS.hp,    backgroundColor:'#fff', borderWidth:2, borderDash:[6,4], yAxisID:'yHp'}, common),
+      Object.assign({label:'Youtube 구독자',   data:s.yt,    borderColor:TREND_COLORS.yt,    backgroundColor:TREND_COLORS.yt, borderWidth:2.5, yAxisID:'yYt', valueLabelOffset:-7, valueLabelColor:TREND_COLORS.yt}, common),
+      Object.assign({label:'Instagram 팔로워', data:s.ig,    borderColor:TREND_COLORS.ig,    backgroundColor:TREND_COLORS.ig, borderWidth:2.5, yAxisID:'yIg', valueLabelOffset:-7, valueLabelColor:TREND_COLORS.ig}, common),
+      Object.assign({label:'HP 뷰',            data:s.hpPV,  borderColor:TREND_COLORS.hp,    backgroundColor:TREND_COLORS.hp, borderWidth:2,   yAxisID:'yHp', valueLabelOffset:-7, valueLabelColor:TREND_COLORS.hp}, common),
+      Object.assign({label:'HP 방문자',        data:s.hpV,   borderColor:TREND_COLORS.hp,    backgroundColor:'#fff', borderWidth:2, borderDash:[6,4], yAxisID:'yHp', valueLabelOffset:17, valueLabelColor:TREND_COLORS.hp}, common),
     ]
   };
   // 각 축의 눈금은 자기 띠(데이터 범위) 안에서만 표시한다
@@ -1286,9 +1288,10 @@ function refreshTrendChart(){
     callback:(v)=> (r.empty || v < r.dataMin - 1e-9 || v > r.dataMax + 1e-9) ? '' : (r.signed ? fmtSigned(v) : Number(v).toLocaleString())});
   const options = {
     responsive:true, maintainAspectRatio:false, animation:false,
+    layout:{padding:{top:18, bottom:4}},
     interaction:{mode:'index', intersect:false},
     plugins:{
-      legend:{display:false}, valueLabels:{enabled:false},
+      legend:{display:false}, valueLabels:{enabled:true},
       tooltip:{callbacks:{label:(c)=> `${c.dataset.label}: ${c.parsed.y == null ? '—' : Number(c.parsed.y).toLocaleString()}`}}
     },
     scales:{
@@ -1309,7 +1312,7 @@ function refreshTrendChart(){
 function buildTrendChartSVG(s, R){
   const n = s.dates.length;
   if(!n) return '';
-  const W = 900, H = 175, padTop = 16, padBottom = 16, padLeft = 30, padRight = 30;
+  const W = 900, H = 210, padTop = 16, padBottom = 16, padLeft = 30, padRight = 30;
   const plotH = H - padTop - padBottom;
   const plotW = W - padLeft - padRight;
   const groupW = plotW / n;
@@ -1694,6 +1697,8 @@ function renderPostGrid(type){
     const shortsTab = document.getElementById('tab-shorts');
     if(shortsTab) shortsTab.classList.toggle('shorts-many', state.posts.shorts.length > 5);
   }
+  const tabEl = document.getElementById('tab-' + type);
+  if(tabEl) tabEl.classList.toggle('all-empty', !state.posts[type].some(p => p.title || p.igViews || p.ytViews || p.cafeName || p.mentioned));
   refreshViewHighlights(type);
 }
 
@@ -1703,6 +1708,8 @@ function updatePostField(type, idx, field, value){
   if(row){
     const p = state.posts[type][idx];
     row.classList.toggle('empty', !(p.title || p.igViews || p.ytViews || p.cafeName || p.mentioned));
+    const tabEl = document.getElementById('tab-' + type);
+    if(tabEl) tabEl.classList.toggle('all-empty', !state.posts[type].some(q => q.title || q.igViews || q.ytViews || q.cafeName || q.mentioned));
   }
   scheduleAutoSave();
 }
@@ -1902,7 +1909,6 @@ function renderHomepage(){
     statRow.innerHTML = '';
     tableWrap.innerHTML = '';
     document.getElementById('hpInsights').innerHTML = '';
-    document.getElementById('hpLegend').innerHTML = '';
     if(hpChart){ hpChart.destroy(); hpChart = null; }
     updateHpHeaderSummary(null, null);
     refreshSummary();
@@ -1920,7 +1926,7 @@ function renderHomepage(){
     </div>
     <div class="hp-stat-group">
       <div class="hp-stat"><label>최대 페이지뷰</label><b>${bestDay.date.slice(5).replace('-','/')}(${DAY_KO[(()=>{const t=bestDay.date.split('-'); return new Date(+t[0],+t[1]-1,+t[2]).getDay();})()]})</b></div>
-      <div class="hp-stat"><label>당일 방문자 · 페이지뷰</label><b>방문자 ${bestDay.visitors.toLocaleString()}명 · 페이지뷰 ${bestDay.pageviews.toLocaleString()}회</b></div>
+      <div class="hp-stat hp-stat-wide"><label>당일 방문자 · 페이지뷰</label><b>방문자 ${bestDay.visitors.toLocaleString()}명 · 페이지뷰 ${bestDay.pageviews.toLocaleString()}회</b></div>
     </div>
   `;
   const maxPVVal = Math.max(...rows.map(r=>r.pageviews));
@@ -2060,6 +2066,7 @@ function refreshHomepageChart(rows){
   rows = rows || [];
   if(!rows.length) return;
   const ctx = document.getElementById('chart-homepage');
+  if(!ctx) return; // 홈페이지 추이 그래프는 삭제됨(일별 추이 그래프로 통합)
   const labels = rows.map(r => r.date.slice(5));
   const dataV  = rows.map(r => r.visitors);
   const dataPV = rows.map(r => r.pageviews);
