@@ -237,7 +237,11 @@ table.daily-table td{padding:2px 3px; border-bottom:1px solid #f0f0f3;}
 table.daily-table td.row-h{font-size:11.5px; color:var(--text-muted); white-space:nowrap;}
 table.daily-table input{width:100%; border:1px solid transparent; background:transparent; border-radius:6px; padding:4px; font-size:12px; text-align:center; font-family:var(--font-num);}
 table.daily-table input:hover, table.daily-table input:focus{border-color:var(--border); background:var(--surface-2); outline:none;}
-table.daily-table td.hp-cell{text-align:center; color:var(--text-muted); font-size:11.5px;}
+table.daily-table td.hp-cell{text-align:center; color:var(--text); font-size:12px;}
+table.daily-table td.daily-val{text-align:center; color:var(--text); font-size:12px; font-family:var(--font-num); cursor:pointer; border-radius:6px; padding:5px 3px;}
+table.daily-table td.daily-val:hover{background:var(--surface-2); box-shadow:inset 0 0 0 1px var(--border);}
+table.daily-table td.daily-val.derived{color:var(--text);}
+table.daily-table input.daily-edit{border-color:var(--hp) !important; background:#fff !important;}
 .chart-canvas-wrap canvas{width:100% !important; height:100% !important; display:block;}
 .hp-chart-wrap{flex:1 1 auto; min-height:340px; height:auto;}
 .chart-title{font-size:11.9px;font-weight:400;color:var(--text-muted);margin-bottom:6px;flex-shrink:0;}
@@ -1189,24 +1193,41 @@ function ytTotalsWithDerived(dates){
   return {totals, derived};
 }
 
-function onDailyInput(el, date, ch){
+/* 일별 값 저장(화면 클릭 수정·매주 자동 입력 공용). ch: 'yt' | 'ytNet' | 'ig'. value가 빈 문자열이면 지운다. */
+function setDailyValue(date, ch, value){
   const signed = !!SIGNED_KEYS[ch];
-  if(signed) formatSignedField(el); else formatNumberField(el);
+  const v = signed ? stripSigned(value) : stripCommas(value);
   if(!state.daily) state.daily = {};
   if(!state.daily[date]) state.daily[date] = {};
-  state.daily[date][ch] = signed ? stripSigned(el.value) : stripCommas(el.value);
-  refreshDailyPlaceholders();
+  state.daily[date][ch] = (v === '-' ? '' : v);
+  renderDailyInputs();
   refreshTrendChart();
   scheduleAutoSave();
+  return state.daily[date][ch];
 }
-/* 입력 중 포커스가 끊기지 않도록 표를 다시 그리지 않고, 자동 계산된 구독자 수 placeholder만 갱신 */
-function refreshDailyPlaceholders(){
-  const dates = periodDates();
-  const {totals, derived} = ytTotalsWithDerived(dates);
-  dates.forEach((d, i) => {
-    const el = document.getElementById('daily-yt-' + d);
-    if(el) el.placeholder = derived[i] && totals[i] != null ? totals[i].toLocaleString('en-US') : '—';
+/* 값 칸을 클릭하면 그 칸만 입력칸으로 바뀐다(Enter/칸 밖 클릭 = 저장, Esc = 취소) */
+function editDailyCell(td){
+  if(td.querySelector('input')) return;
+  const date = td.dataset.date, ch = td.dataset.ch;
+  const raw = (state.daily && state.daily[date] && state.daily[date][ch]) || '';
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.inputMode = SIGNED_KEYS[ch] ? 'text' : 'numeric';
+  input.value = raw;
+  input.className = 'daily-edit';
+  td.innerHTML = '';
+  td.appendChild(input);
+  input.focus(); input.select();
+  let done = false;
+  const finish = (save) => {
+    if(done) return; done = true;
+    if(save) setDailyValue(date, ch, input.value); else renderDailyInputs();
+  };
+  input.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){ e.preventDefault(); finish(true); }
+    else if(e.key === 'Escape'){ e.preventDefault(); finish(false); }
   });
+  input.addEventListener('blur', () => finish(true));
 }
 function renderDailyInputs(){
   const wrap = document.getElementById('dailyInputWrap');
@@ -1214,23 +1235,26 @@ function renderDailyInputs(){
   const dates = periodDates();
   if(!dates.length){ wrap.innerHTML = ''; return; }
   const hp = homepageRowMap();
+  const {totals: ytTotals, derived: ytDerived} = ytTotalsWithDerived(dates);
   const head = dates.map(d => `<th>${d.slice(5).replace('-','/')}(${DAY_KO[dayOfWeekStr(d)]})</th>`).join('');
   const legendLine = (color, dashed) => dashed === null ? '<span class="lg-line" style="border-top-color:transparent"></span>' : `<span class="lg-line${dashed ? ' dashed' : ''}" style="border-top-color:${color}"></span>`;
-  const inputRow = (ch, label, dashed) => `<tr><td class="row-h">${legendLine(TREND_COLORS[ch], dashed)}${label}</td>${dates.map(d => {
+  const valueRow = (ch, label, dashed) => `<tr><td class="row-h">${legendLine(TREND_COLORS[ch], dashed)}${label}</td>${dates.map((d, i) => {
     const raw = state.daily && state.daily[d] ? state.daily[d][ch] : '';
-    const val = SIGNED_KEYS[ch] ? fmtSigned(raw) : fmtNum(raw);
-    return `<td><input type="text" id="daily-${ch}-${d}" inputmode="${SIGNED_KEYS[ch] ? 'text' : 'numeric'}" placeholder="${SIGNED_KEYS[ch] ? '±0' : '—'}" value="${escAttr(val)}" oninput="onDailyInput(this,'${d}','${ch}')"></td>`;
+    let text = SIGNED_KEYS[ch] ? fmtSigned(raw) : fmtNum(raw);
+    let cls = 'daily-val';
+    // Youtube 구독자는 직접 입력값이 없으면 순증감으로 계산한 값을 보여준다
+    if(ch === 'yt' && !text && ytDerived[i] && ytTotals[i] != null){ text = ytTotals[i].toLocaleString('en-US'); cls += ' derived'; }
+    return `<td class="${cls}" id="daily-${ch}-${d}" data-date="${d}" data-ch="${ch}" title="클릭해서 수정" onclick="editDailyCell(this)">${text || '—'}</td>`;
   }).join('')}</tr>`;
   const hpRow = (key, label, dashed) => `<tr><td class="row-h">${legendLine(TREND_COLORS.hp, dashed)}${label}</td>${dates.map(d =>
     `<td class="hp-cell">${hp[d] ? (hp[d][key] || 0).toLocaleString() : '—'}</td>`).join('')}</tr>`;
-  wrap.innerHTML = `<table class="daily-table"><thead><tr><th class="row-h">일별 입력</th>${head}</tr></thead><tbody>
-    ${inputRow('yt', 'Youtube 구독자', false)}
-    ${inputRow('ytNet', 'Youtube 순증감 <small>(구독자 계산용)</small>', null)}
-    ${inputRow('ig', 'Instagram 팔로워', false)}
-    ${hpRow('visitors', 'HP 방문자 (자동)', true)}
-    ${hpRow('pageviews', 'HP 뷰 (자동)', false)}
+  wrap.innerHTML = `<table class="daily-table"><thead><tr><th class="row-h">일별 데이터</th>${head}</tr></thead><tbody>
+    ${valueRow('yt', 'Youtube 구독자', false)}
+    ${valueRow('ytNet', 'Youtube 순증감 <small>(구독자 계산용)</small>', null)}
+    ${valueRow('ig', 'Instagram 팔로워', false)}
+    ${hpRow('visitors', 'HP 방문자', true)}
+    ${hpRow('pageviews', 'HP 뷰', false)}
   </tbody></table>`;
-  refreshDailyPlaceholders();
 }
 
 /* 값은 크고 하루 변화량은 작은 지표용 축 범위(전체 값의 0.1% 이상 여유를 둬서 1~2명 변화가 과장되지 않게) */
