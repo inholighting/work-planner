@@ -90,7 +90,7 @@ input[type="file"]{display:none;}
 .hp-main-row{
   display:grid; gap:16px; align-items:stretch; margin-top:10px;
   grid-template-columns:1.1fr 1fr;
-  grid-template-areas: "table chart" "insights chart";
+  grid-template-areas: "table chart";
 }
 .hp-main-row > *{min-width:0;}
 .hp-table-wrap{grid-area:table;}
@@ -222,6 +222,9 @@ table.post-table th.th-ratio{text-align:left;}
 .chart-canvas-wrap{position:relative; width:100%; height:150px; overflow:visible;}
 .trend-card{margin-bottom:12px; display:flex; flex-direction:column;}
 .trend-chart-wrap{height:260px;}
+.trend-insights{margin-top:10px; padding-top:8px; border-top:1px solid #f0f0f3;}
+.trend-insights .chart-title{margin-bottom:2px;}
+.trend-insights .insight-list{margin-top:4px;}
 .lg-line{display:inline-block; width:18px; height:0; border-top:2.5px solid; vertical-align:middle; margin-right:4px;}
 .lg-line.dashed{border-top-style:dashed;}
 .daily-input-wrap{margin-top:8px; overflow-x:auto;}
@@ -563,14 +566,18 @@ table.hp-table mark.hp-max-hl{
   .hp-chart-card{max-width:none !important; margin-left:0 !important; margin-right:0 !important;}
 
   /* 일별 추이 그래프 (인쇄용) — 삭제된 SRC 조회수 비교 그래프 자리만큼의 높이 */
-  .trend-card{padding:4px 8px; height:180px; margin-bottom:4px;}
+  .trend-card{padding:4px 8px; margin-bottom:4px;}
+  .trend-card .print-mini-chart{flex:0 0 auto !important; height:140px;}
+  .trend-insights{margin-top:3px; padding-top:3px;}
+  .trend-insights .chart-title{font-size:11.3px; margin-bottom:0;}
+  .trend-insights .insight-list{margin-top:2px !important;}
   .trend-card .chart-title{font-size:11.3px; margin-bottom:1px; flex:0 0 auto;}
   .trend-card .legend-row{margin-top:1px; font-size:10px; flex:0 0 auto;}
   .post-card{padding:6px 8px !important;}
 
   .hp-main-row{
     grid-template-columns:1fr 200px !important;
-    grid-template-areas:"chart table" "insights insights" !important;
+    grid-template-areas:"chart table" !important;
     gap:6px; margin-top:4px;
   }
   .hp-chart-card{max-width:none !important; margin-left:0 !important; margin-right:0 !important;}
@@ -604,7 +611,7 @@ table.hp-table mark.hp-max-hl{
   .content-type-row{flex-direction:column;}
 }
 @media (max-width:640px){
-  .hp-main-row{grid-template-columns:1fr; grid-template-areas:"table" "chart" "insights";}
+  .hp-main-row{grid-template-columns:1fr; grid-template-areas:"table" "chart";}
   .hp-stat-row{grid-template-columns:1fr;}
   #hpStatRow{grid-template-columns:1fr;}
 }
@@ -732,6 +739,10 @@ table.hp-table mark.hp-max-hl{
           <span><span class="lg-line dashed" style="border-top-color:#e53935"></span>홈페이지 방문자</span>
           <span><span class="lg-line" style="border-top-color:#e53935"></span>홈페이지 뷰</span>
         </div>
+        <div class="trend-insights">
+          <div class="chart-title">콘텐츠 발행일별 홈페이지 방문 변화</div>
+          <ul class="insight-list" id="hpInsights"></ul>
+        </div>
         <div class="daily-input-wrap no-print" id="dailyInputWrap"></div>
       </div>
 
@@ -776,7 +787,6 @@ table.hp-table mark.hp-max-hl{
             <div class="chart-canvas-wrap hp-chart-wrap"><canvas id="chart-homepage"></canvas></div><div class="print-mini-chart" id="printchart-homepage"></div>
             <div class="legend-row" id="hpLegend"></div>
           </div>
-          <ul class="insight-list" id="hpInsights"></ul>
         </div>
       </div>
     </div>
