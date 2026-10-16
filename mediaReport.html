@@ -160,7 +160,7 @@ table.post-table td{padding:3px 4px; border-bottom:1px solid #f0f0f3; vertical-a
 table.post-table tr.post-row.empty{opacity:.5;}
 table.post-table tr.post-row:hover{background:var(--surface-2);}
 .post-idx-cell{font-family:var(--font-num); font-size:11.3px; color:var(--text-light); width:68px; white-space:nowrap;}
-.post-idx-cell .idx-num{display:inline-block; min-width:12px; text-align:right; margin-right:3px; vertical-align:middle;}
+.post-idx-cell .idx-num{display:inline-block; min-width:20px; text-align:right; margin-right:3px; vertical-align:middle; font-weight:700; color:var(--text);}
 .reorder-btns{display:inline-flex; flex-direction:column; vertical-align:middle; line-height:0;}
 .reorder-btn{
   border:none; background:transparent; color:var(--text-light); font-size:8.6px; line-height:9px;
@@ -627,24 +627,6 @@ table.hp-table mark.hp-max-hl{
 <div class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <svg class="brand-mark" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="brandMarkGrad" x1="0" y1="0" x2="30" y2="30" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#ff0000"/>
-            <stop offset="34%" stop-color="#ff0000"/>
-            <stop offset="34%" stop-color="#dc2743"/>
-            <stop offset="66%" stop-color="#bc1888"/>
-            <stop offset="66%" stop-color="#2f80ed"/>
-            <stop offset="100%" stop-color="#2f80ed"/>
-          </linearGradient>
-        </defs>
-        <rect width="30" height="30" rx="8" fill="url(#brandMarkGrad)"/>
-        <rect x="7" y="17.5" width="3.2" height="6.5" rx="1" fill="#fff" fill-opacity=".9"/>
-        <rect x="13.4" y="12.5" width="3.2" height="11.5" rx="1" fill="#fff" fill-opacity=".95"/>
-        <rect x="19.8" y="8" width="3.2" height="16" rx="1" fill="#fff"/>
-        <path d="M6.5 14.5 L12.7 9.7 L18.7 12.3 L23.5 6.3" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="23.5" cy="6.3" r="1.7" fill="#fff"/>
-      </svg>
       <div class="brand-text">
         <h1>미디어채널 주간 리포트</h1>
         <span>BMD팀 임수연PD</span>
@@ -737,10 +719,6 @@ table.hp-table mark.hp-max-hl{
         <div class="chart-title">일별 추이 · Youtube 구독자 / Instagram 팔로워 / 홈페이지 방문자·뷰</div>
         <div class="chart-canvas-wrap trend-chart-wrap"><canvas id="chart-trend"></canvas></div><div class="print-mini-chart" id="printchart-trend"></div>
         <div class="legend-row trend-legend">
-          <span><span class="lg-line" style="border-top-color:#1e9e4a"></span>Youtube 구독자</span>
-          <span><span class="lg-line" style="border-top-color:#4fb3f6"></span>Instagram 팔로워</span>
-          <span><span class="lg-line dashed" style="border-top-color:#e53935"></span>홈페이지 방문자</span>
-          <span><span class="lg-line" style="border-top-color:#e53935"></span>홈페이지 뷰</span>
           <span><b class="pub-txt" style="color:#000">L</b>, <b class="pub-txt" style="color:#000">S</b> 발행일 (아래 롱폼, SRC 표 번호)</span>
         </div>
         <div class="paste-zone no-print hp-paste" id="pasteZone" contenteditable="true" data-placeholder="홈페이지 데이터: 관리자 페이지의 일자별 표를 복사해서 여기를 클릭하고 Ctrl+V(⌘V)로 붙여넣기 (일자·페이지뷰·방문자만 사용)"></div>
@@ -1283,10 +1261,10 @@ function refreshTrendChart(){
   const data = {
     labels: s.labels,
     datasets: [
-      Object.assign({label:'Youtube 구독자',   data:s.yt,    borderColor:TREND_COLORS.yt,    backgroundColor:TREND_COLORS.yt, borderWidth:2.5, yAxisID:'yYt', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.yt}, common),
-      Object.assign({label:'Instagram 팔로워', data:s.ig,    borderColor:TREND_COLORS.ig,    backgroundColor:TREND_COLORS.ig, borderWidth:2.5, yAxisID:'yIg', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.ig}, common),
-      Object.assign({label:'HP 뷰',            data:s.hpPV,  borderColor:TREND_COLORS.hp,    backgroundColor:TREND_COLORS.hp, borderWidth:2,   yAxisID:'yHp', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.hp}, common),
-      Object.assign({label:'HP 방문자',        data:s.hpV,   borderColor:TREND_COLORS.hp,    backgroundColor:'#fff', borderWidth:2, borderDash:[6,4], yAxisID:'yHp', valueLabelOffset:21, valueLabelColor:TREND_COLORS.hp}, common),
+      Object.assign({label:'Youtube 구독자', seriesName:'Youtube', data:s.yt,    borderColor:TREND_COLORS.yt,    backgroundColor:TREND_COLORS.yt, borderWidth:2.5, yAxisID:'yYt', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.yt}, common),
+      Object.assign({label:'Instagram 팔로워', seriesName:'Instagram', data:s.ig,    borderColor:TREND_COLORS.ig,    backgroundColor:TREND_COLORS.ig, borderWidth:2.5, yAxisID:'yIg', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.ig}, common),
+      Object.assign({label:'HP 뷰', seriesName:'HP(View)', data:s.hpPV,  borderColor:TREND_COLORS.hp,    backgroundColor:TREND_COLORS.hp, borderWidth:2,   yAxisID:'yHp', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.hp}, common),
+      Object.assign({label:'HP 방문자', seriesName:'HP(방문자)', data:s.hpV,   borderColor:TREND_COLORS.hp,    backgroundColor:'#fff', borderWidth:2, borderDash:[6,4], yAxisID:'yHp', valueLabelOffset:21, valueLabelColor:TREND_COLORS.hp}, common),
     ]
   };
   // 각 축의 눈금은 자기 띠(데이터 범위) 안에서만 표시한다
@@ -1294,17 +1272,18 @@ function refreshTrendChart(){
     callback:(v)=> (r.empty || v < r.dataMin - 1e-9 || v > r.dataMax + 1e-9) ? '' : (r.signed ? fmtSigned(v) : Number(v).toLocaleString())});
   const options = {
     responsive:true, maintainAspectRatio:false, animation:false,
-    layout:{padding:{top:22, bottom:26}},
+    layout:{padding:{top:22, bottom:26, left:96, right:24}},
     interaction:{mode:'index', intersect:false},
     plugins:{
       legend:{display:false}, valueLabels:{enabled:true, font:'700 13px -apple-system, sans-serif'},
       tooltip:{callbacks:{label:(c)=> `${c.dataset.label}: ${c.parsed.y == null ? '—' : Number(c.parsed.y).toLocaleString()}`}}
     },
     scales:{
-      x:    {grid:{display:false}, ticks:{font:{size:12}}},
-      yYt:  {position:'left',  min:rYt.min,  max:rYt.max,  ticks:tick(TREND_COLORS.yt, rYt),   grid:{color:'#f2f2f5'}},
-      yIg:  {position:'right', min:rIg.min,  max:rIg.max,  ticks:tick(TREND_COLORS.ig, rIg),   grid:{display:false}},
-      yHp:  {position:'right', min:rHp.min,  max:rHp.max,  ticks:tick(TREND_COLORS.hp, rHp),   grid:{display:false}},
+      x:    {grid:{display:true, color:'#f2f2f5'}, ticks:{font:{size:12}}},
+      // 값은 점 위에 표시하고 선 이름은 왼쪽에 쓰므로 세로축 눈금은 숨긴다
+      yYt:  {display:false, min:rYt.min,  max:rYt.max},
+      yIg:  {display:false, min:rIg.min,  max:rIg.max},
+      yHp:  {display:false, min:rHp.min,  max:rHp.max},
     }
   };
   const chips = pubChipsByDate(s.dates);
@@ -1361,11 +1340,38 @@ const pubChipsPlugin = {
 };
 Chart.register(pubChipsPlugin);
 
+/* 화면용(Chart.js) 선 이름 표시: 각 선의 첫 점 왼쪽에 Youtube / Instagram / HP(View) / HP(방문자)를 쓴다.
+   이름끼리 겹치면 위아래로 살짝 벌려 준다. */
+const seriesNamePlugin = {
+  id: 'seriesNamePlugin',
+  afterDatasetsDraw(chart){
+    const items = [];
+    chart.data.datasets.forEach((ds, di) => {
+      if(!ds.seriesName) return;
+      const meta = chart.getDatasetMeta(di);
+      const idx = ds.data.findIndex(v => v != null);
+      if(idx < 0 || !meta.data[idx]) return;
+      items.push({name: ds.seriesName, color: ds.borderColor, y: meta.data[idx].y});
+    });
+    if(!items.length) return;
+    items.sort((a,b) => a.y - b.y);
+    const GAP = 16;
+    for(let i = 1; i < items.length; i++){ if(items[i].y - items[i-1].y < GAP) items[i].y = items[i-1].y + GAP; }
+    const {ctx, chartArea} = chart;
+    ctx.save();
+    ctx.font = '800 13px -apple-system, sans-serif';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    items.forEach(it => { ctx.fillStyle = it.color; ctx.fillText(it.name, chartArea.left - 14, it.y); });
+    ctx.restore();
+  }
+};
+Chart.register(seriesNamePlugin);
+
 function buildTrendChartSVG(s, R){
   const n = s.dates.length;
   if(!n) return '';
   // 인쇄 폭(약 190mm) 대비 비율에 맞춘 좌표계: 숫자가 종이에서 9~10pt 정도로 보이도록 글씨를 키움
-  const W = 900, H = 330, padTop = 26, padBottom = 52, padLeft = 34, padRight = 34;
+  const W = 900, H = 330, padTop = 26, padBottom = 52, padLeft = 118, padRight = 30;
   const FONT = 15, R_PT = 4;
   const plotH = H - padTop - padBottom;
   const plotW = W - padLeft - padRight;
@@ -1398,11 +1404,22 @@ function buildTrendChartSVG(s, R){
   let lines = '', labels = '';
   // labelDy: 값 라벨을 점 위(-) 또는 아래(+)에 둔다
   const series = [
-    {vals:s.hpPV,  r:R.hp,    color:TREND_COLORS.hp,    dash:'',    labelDy:-9},
-    {vals:s.hpV,   r:R.hp,    color:TREND_COLORS.hp,    dash:'6,5', labelDy:FONT+7},
-    {vals:s.ig,    r:R.ig,    color:TREND_COLORS.ig,    dash:'',    labelDy:-9},
-    {vals:s.yt,    r:R.yt,    color:TREND_COLORS.yt,    dash:'',    labelDy:-9},
+    {vals:s.hpPV,  r:R.hp,    color:TREND_COLORS.hp,    dash:'',    labelDy:-9,      name:'HP(View)'},
+    {vals:s.hpV,   r:R.hp,    color:TREND_COLORS.hp,    dash:'6,5', labelDy:FONT+7,  name:'HP(방문자)'},
+    {vals:s.ig,    r:R.ig,    color:TREND_COLORS.ig,    dash:'',    labelDy:-9,      name:'Instagram'},
+    {vals:s.yt,    r:R.yt,    color:TREND_COLORS.yt,    dash:'',    labelDy:-9,      name:'Youtube'},
   ];
+  // 선 이름: 각 선의 첫 점 높이에 맞춰 왼쪽에 쓴다(겹치면 위아래로 벌림)
+  const names = [];
+  series.forEach(se => {
+    const i = se.vals.findIndex(v => v != null);
+    if(i >= 0) names.push({name: se.name, color: se.color, y: yOf(se.vals[i], se.r)});
+  });
+  names.sort((a,b) => a.y - b.y);
+  for(let i = 1; i < names.length; i++){ if(names[i].y - names[i-1].y < 19) names[i].y = names[i-1].y + 19; }
+  names.forEach(nm => {
+    labels += `<text x="${padLeft - 16}" y="${(nm.y + 5).toFixed(1)}" font-size="16" font-weight="800" text-anchor="end" fill="${nm.color}">${nm.name}</text>`;
+  });
   series.forEach(se => {
     const pts = se.vals.map((v,i) => v == null ? null : [xOf(i), yOf(v, se.r)]);
     const valid = pts.filter(Boolean);
@@ -1721,7 +1738,7 @@ function renderPostGrid(type){
     return `
     <tr class="post-row ${hasData ? '' : 'empty'}" id="post-${type}-${idx}">
       <td class="post-idx-cell">
-        <span class="idx-num">${idx+1}</span><span class="reorder-btns no-print">
+        <span class="idx-num">${type==='longform' ? 'L' : type==='shorts' ? 'S' : ''}${idx+1}</span><span class="reorder-btns no-print">
           <button type="button" class="reorder-btn" onclick="movePost('${type}',${idx},-1)" ${idx===0 ? 'disabled' : ''} title="위로 이동">▲</button>
           <button type="button" class="reorder-btn" onclick="movePost('${type}',${idx},1)" ${idx===state.posts[type].length-1 ? 'disabled' : ''} title="아래로 이동">▼</button>
         </span><button type="button" class="row-reset-btn no-print" onclick="resetPost('${type}',${idx})" title="이 줄만 초기화">↺</button><button type="button" class="row-delete-btn no-print" onclick="deletePost('${type}',${idx})" title="이 줄 삭제">✕</button>
