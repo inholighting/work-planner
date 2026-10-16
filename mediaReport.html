@@ -221,11 +221,12 @@ table.post-table th.th-ratio{text-align:left;}
 .chart-box{padding:10px 12px;margin-bottom:0;}
 .chart-canvas-wrap{position:relative; width:100%; height:150px; overflow:visible;}
 .trend-card{margin-bottom:12px; display:flex; flex-direction:column;}
-.trend-chart-wrap{height:340px;}
+.trend-chart-wrap{height:420px;}
 .trend-insights{margin-top:10px; padding-top:8px; border-top:1px solid #f0f0f3;}
 .daily-input-wrap + .trend-insights{margin-top:12px;}
 .trend-insights .chart-title{margin-bottom:2px;}
 .trend-insights .insight-list{margin-top:4px;}
+.pub-chip{display:inline-block; color:#fff; font-size:10px; font-weight:700; line-height:1; padding:3px 5px; border-radius:4px; margin-right:3px; vertical-align:middle;}
 .lg-line{display:inline-block; width:18px; height:0; border-top:2.5px solid; vertical-align:middle; margin-right:4px;}
 .lg-line.dashed{border-top-style:dashed;}
 .daily-input-wrap{margin-top:8px; overflow-x:auto;}
@@ -567,12 +568,13 @@ table.hp-table mark.hp-max-hl{
 
   /* 일별 추이 그래프 (인쇄용) — 삭제된 SRC 조회수 비교 그래프 자리만큼의 높이 */
   .trend-card{padding:4px 8px; margin-bottom:4px;}
-  .trend-card .print-mini-chart{flex:0 0 auto !important; height:122px;}
+  .trend-card .print-mini-chart{flex:0 0 auto !important; height:250px;}
   .trend-insights{margin-top:2px; padding-top:2px;}
   .trend-insights .chart-title{font-size:11.3px; margin-bottom:0;}
   .trend-insights .insight-list{margin-top:2px !important;}
-  .trend-card .chart-title{font-size:11.3px; margin-bottom:1px; flex:0 0 auto;}
-  .trend-card .legend-row{margin-top:0; font-size:9.5px; flex:0 0 auto;}
+  .trend-card .chart-title{font-size:12.5px; font-weight:700; color:#000; margin-bottom:1px; flex:0 0 auto;}
+  .trend-card .legend-row{margin-top:0; font-size:10.5px; flex:0 0 auto;}
+  .trend-card .pub-chip{font-size:9px; padding:2px 4px;}
   .post-card{padding:3px 8px !important;}
   .post-table-wrap{margin-bottom:2px;}
 
@@ -736,12 +738,9 @@ table.hp-table mark.hp-max-hl{
           <span><span class="lg-line" style="border-top-color:#4fb3f6"></span>Instagram 팔로워</span>
           <span><span class="lg-line dashed" style="border-top-color:#e53935"></span>홈페이지 방문자</span>
           <span><span class="lg-line" style="border-top-color:#e53935"></span>홈페이지 뷰</span>
+          <span><span class="pub-chip" style="background:#ff0000">롱1</span><span class="pub-chip" style="background:#f2994a">S1</span>발행일 (아래 롱폼·SRC 표 번호)</span>
         </div>
         <div class="daily-input-wrap no-print" id="dailyInputWrap"></div>
-        <div class="trend-insights">
-          <div class="chart-title">콘텐츠 발행일별 홈페이지 방문 변화</div>
-          <ul class="insight-list" id="hpInsights"></ul>
-        </div>
       </div>
     </div>
   </div>
@@ -1099,7 +1098,7 @@ const barValueLabelPlugin = {
         if(!value) return;
         const text = Number(value).toLocaleString();
         ctx.save();
-        ctx.font = '10px -apple-system, sans-serif';
+        ctx.font = (chart.options.plugins.valueLabels && chart.options.plugins.valueLabels.font) || '10px -apple-system, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
         ctx.lineWidth = 3;
@@ -1275,14 +1274,14 @@ function refreshTrendChart(){
   const rYt  = bandRange(followerAxisRange(s.yt), TREND_BANDS.yt);
   const rIg  = bandRange(followerAxisRange(s.ig), TREND_BANDS.ig);
   const rHp  = bandRange(hpAxisRange(s.hpV, s.hpPV), TREND_BANDS.hp);
-  const common = {tension:0, spanGaps:true, pointRadius:3, pointHoverRadius:5, fill:false};
+  const common = {tension:0, spanGaps:true, pointRadius:4, pointHoverRadius:6, fill:false};
   const data = {
     labels: s.labels,
     datasets: [
-      Object.assign({label:'Youtube 구독자',   data:s.yt,    borderColor:TREND_COLORS.yt,    backgroundColor:TREND_COLORS.yt, borderWidth:2.5, yAxisID:'yYt', valueLabelOffset:-7, valueLabelColor:TREND_COLORS.yt}, common),
-      Object.assign({label:'Instagram 팔로워', data:s.ig,    borderColor:TREND_COLORS.ig,    backgroundColor:TREND_COLORS.ig, borderWidth:2.5, yAxisID:'yIg', valueLabelOffset:-7, valueLabelColor:TREND_COLORS.ig}, common),
-      Object.assign({label:'HP 뷰',            data:s.hpPV,  borderColor:TREND_COLORS.hp,    backgroundColor:TREND_COLORS.hp, borderWidth:2,   yAxisID:'yHp', valueLabelOffset:-7, valueLabelColor:TREND_COLORS.hp}, common),
-      Object.assign({label:'HP 방문자',        data:s.hpV,   borderColor:TREND_COLORS.hp,    backgroundColor:'#fff', borderWidth:2, borderDash:[6,4], yAxisID:'yHp', valueLabelOffset:17, valueLabelColor:TREND_COLORS.hp}, common),
+      Object.assign({label:'Youtube 구독자',   data:s.yt,    borderColor:TREND_COLORS.yt,    backgroundColor:TREND_COLORS.yt, borderWidth:2.5, yAxisID:'yYt', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.yt}, common),
+      Object.assign({label:'Instagram 팔로워', data:s.ig,    borderColor:TREND_COLORS.ig,    backgroundColor:TREND_COLORS.ig, borderWidth:2.5, yAxisID:'yIg', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.ig}, common),
+      Object.assign({label:'HP 뷰',            data:s.hpPV,  borderColor:TREND_COLORS.hp,    backgroundColor:TREND_COLORS.hp, borderWidth:2,   yAxisID:'yHp', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.hp}, common),
+      Object.assign({label:'HP 방문자',        data:s.hpV,   borderColor:TREND_COLORS.hp,    backgroundColor:'#fff', borderWidth:2, borderDash:[6,4], yAxisID:'yHp', valueLabelOffset:21, valueLabelColor:TREND_COLORS.hp}, common),
     ]
   };
   // 각 축의 눈금은 자기 띠(데이터 범위) 안에서만 표시한다
@@ -1290,51 +1289,116 @@ function refreshTrendChart(){
     callback:(v)=> (r.empty || v < r.dataMin - 1e-9 || v > r.dataMax + 1e-9) ? '' : (r.signed ? fmtSigned(v) : Number(v).toLocaleString())});
   const options = {
     responsive:true, maintainAspectRatio:false, animation:false,
-    layout:{padding:{top:18, bottom:4}},
+    layout:{padding:{top:22, bottom:26}},
     interaction:{mode:'index', intersect:false},
     plugins:{
-      legend:{display:false}, valueLabels:{enabled:true},
+      legend:{display:false}, valueLabels:{enabled:true, font:'700 13px -apple-system, sans-serif'},
       tooltip:{callbacks:{label:(c)=> `${c.dataset.label}: ${c.parsed.y == null ? '—' : Number(c.parsed.y).toLocaleString()}`}}
     },
     scales:{
-      x:    {grid:{display:false}},
+      x:    {grid:{display:false}, ticks:{font:{size:12}}},
       yYt:  {position:'left',  min:rYt.min,  max:rYt.max,  ticks:tick(TREND_COLORS.yt, rYt),   grid:{color:'#f2f2f5'}},
       yIg:  {position:'right', min:rIg.min,  max:rIg.max,  ticks:tick(TREND_COLORS.ig, rIg),   grid:{display:false}},
       yHp:  {position:'right', min:rHp.min,  max:rHp.max,  ticks:tick(TREND_COLORS.hp, rHp),   grid:{display:false}},
     }
   };
-  if(trendChart){ trendChart.data = data; trendChart.options = options; trendChart.resize(); trendChart.update('none'); }
-  else trendChart = new Chart(ctx, {type:'line', data, options});
+  const chips = pubChipsByDate(s.dates);
+  if(trendChart){ trendChart.data = data; trendChart.options = options; trendChart.$pubChips = chips; trendChart.resize(); trendChart.update('none'); }
+  else { trendChart = new Chart(ctx, {type:'line', data, options}); trendChart.$pubChips = chips; trendChart.update('none'); }
 
   // 인쇄용 정적 SVG (다른 차트와 동일하게 Chart.js 캔버스 대신 사용)
   const printEl = document.getElementById('printchart-trend');
   if(printEl) printEl.innerHTML = buildTrendChartSVG(s, {yt:rYt, ig:rIg, hp:rHp});
 }
 
+/* 날짜별 롱폼·SRC 발행 표시: 아래 콘텐츠 표의 행 번호와 같은 번호를 붙인다 (롱폼 1번 → "롱1", SRC 3번 → "S3") */
+function pubChipsByDate(dates){
+  const out = dates.map(() => []);
+  const idx = {}; dates.forEach((d,i) => idx[d] = i);
+  [['longform','롱'], ['shorts','S']].forEach(([key, prefix]) => {
+    (state.posts[key] || []).forEach((p, k) => {
+      if(!p.date || idx[p.date] === undefined) return;
+      if(!(p.title || p.ytViews || p.igViews)) return;
+      out[idx[p.date]].push({text: prefix + (k+1), color: TYPE_COLOR[key]});
+    });
+  });
+  return out;
+}
+
+/* 화면용(Chart.js) 발행 표시 플러그인: x축 날짜 아래에 칩을 그린다 */
+const pubChipsPlugin = {
+  id: 'pubChipsPlugin',
+  afterDraw(chart){
+    const chips = chart.$pubChips;
+    if(!chips || !chart.scales.x) return;
+    const {ctx} = chart; const xs = chart.scales.x;
+    const y = xs.bottom + 4, h = 18;
+    ctx.save();
+    ctx.font = '700 11px -apple-system, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    chips.forEach((list, i) => {
+      if(!list.length) return;
+      const cx = xs.getPixelForValue(i);
+      const widths = list.map(c => ctx.measureText(c.text).width + 10);
+      const total = widths.reduce((a,b)=>a+b,0) + (list.length-1)*3;
+      let x = cx - total/2;
+      list.forEach((c, j) => {
+        const w = widths[j];
+        ctx.fillStyle = c.color;
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(x, y, w, h, 4); else ctx.rect(x, y, w, h);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.fillText(c.text, x + w/2, y + h/2 + 0.5);
+        x += w + 3;
+      });
+    });
+    ctx.restore();
+  }
+};
+Chart.register(pubChipsPlugin);
+
 function buildTrendChartSVG(s, R){
   const n = s.dates.length;
   if(!n) return '';
-  const W = 900, H = 210, padTop = 16, padBottom = 16, padLeft = 30, padRight = 30;
+  // 인쇄 폭(약 190mm) 대비 비율에 맞춘 좌표계: 숫자가 종이에서 9~10pt 정도로 보이도록 글씨를 키움
+  const W = 900, H = 330, padTop = 26, padBottom = 52, padLeft = 34, padRight = 34;
+  const FONT = 15, R_PT = 4;
   const plotH = H - padTop - padBottom;
   const plotW = W - padLeft - padRight;
   const groupW = plotW / n;
   const xOf = (i) => padLeft + i*groupW + groupW/2;
   const yOf = (v, r) => padTop + plotH - ((v - r.min) / ((r.max - r.min) || 1)) * plotH;
+  const chips = pubChipsByDate(s.dates);
 
   let grid = '';
   for(let i=0;i<n;i++){
     grid += `<line x1="${xOf(i).toFixed(1)}" y1="${padTop}" x2="${xOf(i).toFixed(1)}" y2="${padTop+plotH}" stroke="#eee" stroke-width="1"/>`;
-    grid += `<text x="${xOf(i).toFixed(1)}" y="${H-3}" font-size="10" text-anchor="middle" fill="#555">${s.labels[i]}</text>`;
+    grid += `<text x="${xOf(i).toFixed(1)}" y="${padTop+plotH+18}" font-size="14" text-anchor="middle" fill="#333">${s.labels[i]}</text>`;
+    // 발행 칩
+    const list = chips[i];
+    if(list.length){
+      const cw = (t) => t.length * 9 + 14;
+      const total = list.reduce((a,c)=>a+cw(c.text),0) + (list.length-1)*4;
+      let x = xOf(i) - total/2;
+      const y = padTop + plotH + 26;
+      list.forEach(c => {
+        const w = cw(c.text);
+        grid += `<rect x="${x.toFixed(1)}" y="${y}" width="${w}" height="21" rx="5" fill="${c.color}"/>`;
+        grid += `<text x="${(x + w/2).toFixed(1)}" y="${y + 15.5}" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">${c.text}</text>`;
+        x += w + 4;
+      });
+    }
   }
   grid += `<line x1="${padLeft}" y1="${padTop+plotH}" x2="${W-padRight}" y2="${padTop+plotH}" stroke="#ccc" stroke-width="1"/>`;
 
   let lines = '', labels = '';
   // labelDy: 값 라벨을 점 위(-) 또는 아래(+)에 둔다
   const series = [
-    {vals:s.hpPV,  r:R.hp,    color:TREND_COLORS.hp,    dash:'',    labelDy:-6},
-    {vals:s.hpV,   r:R.hp,    color:TREND_COLORS.hp,    dash:'5,4', labelDy:13},
-    {vals:s.ig,    r:R.ig,    color:TREND_COLORS.ig,    dash:'',    labelDy:-6},
-    {vals:s.yt,    r:R.yt,    color:TREND_COLORS.yt,    dash:'',    labelDy:-6},
+    {vals:s.hpPV,  r:R.hp,    color:TREND_COLORS.hp,    dash:'',    labelDy:-9},
+    {vals:s.hpV,   r:R.hp,    color:TREND_COLORS.hp,    dash:'6,5', labelDy:FONT+7},
+    {vals:s.ig,    r:R.ig,    color:TREND_COLORS.ig,    dash:'',    labelDy:-9},
+    {vals:s.yt,    r:R.yt,    color:TREND_COLORS.yt,    dash:'',    labelDy:-9},
   ];
   series.forEach(se => {
     const pts = se.vals.map((v,i) => v == null ? null : [xOf(i), yOf(v, se.r)]);
@@ -1342,11 +1406,11 @@ function buildTrendChartSVG(s, R){
     if(!valid.length) return;
     // spanGaps와 동일하게 비어있는 날은 건너뛰고 이어서 그린다
     const d = valid.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
-    lines += `<path d="${d}" fill="none" stroke="${se.color}" stroke-width="2"${se.dash ? ` stroke-dasharray="${se.dash}"` : ''}/>`;
+    lines += `<path d="${d}" fill="none" stroke="${se.color}" stroke-width="2.6"${se.dash ? ` stroke-dasharray="${se.dash}"` : ''}/>`;
     pts.forEach((p,i) => {
       if(!p) return;
-      lines += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="${se.dash ? '#fff' : se.color}" stroke="${se.color}" stroke-width="1.4"/>`;
-      labels += `<text x="${p[0].toFixed(1)}" y="${(p[1] + se.labelDy).toFixed(1)}" font-size="9.5" text-anchor="middle" fill="${se.color}" stroke="#fff" stroke-width="2.4" paint-order="stroke">${se.signed ? fmtSigned(se.vals[i]) : Number(se.vals[i]).toLocaleString()}</text>`;
+      lines += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${R_PT}" fill="${se.dash ? '#fff' : se.color}" stroke="${se.color}" stroke-width="1.8"/>`;
+      labels += `<text x="${p[0].toFixed(1)}" y="${(p[1] + se.labelDy).toFixed(1)}" font-size="${FONT}" font-weight="700" text-anchor="middle" fill="${se.color}" stroke="#fff" stroke-width="3.2" paint-order="stroke">${se.signed ? fmtSigned(se.vals[i]) : Number(se.vals[i]).toLocaleString()}</text>`;
     });
   });
 
@@ -1706,6 +1770,7 @@ function renderPostGrid(type){
 
 function updatePostField(type, idx, field, value){
   state.posts[type][idx][field] = value;
+  if(type === 'longform' || type === 'shorts') refreshTrendChart();
   const row = document.getElementById(`post-${type}-${idx}`);
   if(row){
     const p = state.posts[type][idx];
@@ -1910,7 +1975,6 @@ function renderHomepage(){
   if(!rows.length){
     statRow.innerHTML = '';
     tableWrap.innerHTML = '';
-    document.getElementById('hpInsights').innerHTML = '';
     if(hpChart){ hpChart.destroy(); hpChart = null; }
     updateHpHeaderSummary(null, null);
     refreshSummary();
@@ -2213,6 +2277,7 @@ function buildHomepageChartSVG(rows, markers, labels, dataV, dataPV){
 function refreshHomepageInsights(rows){
   rows = rows || [];
   const ul = document.getElementById('hpInsights');
+  if(!ul) return; // 발행 효과 목록은 삭제됨(일별 추이 그래프의 발행 표시로 대체)
   if(!rows.length){ ul.innerHTML=''; return; }
   const dateIndex = {}; rows.forEach((r,i) => dateIndex[r.date] = i);
   const items = [];
