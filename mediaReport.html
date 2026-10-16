@@ -1259,8 +1259,8 @@ function refreshTrendChart(){
   const data = {
     labels: s.labels,
     datasets: [
-      Object.assign({label:'Youtube 구독자', seriesName:'Youtube', data:s.yt,    borderColor:TREND_COLORS.yt,    backgroundColor:TREND_COLORS.yt, borderWidth:2.5, yAxisID:'yYt', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.yt}, common),
-      Object.assign({label:'Instagram 팔로워', seriesName:'Instagram', data:s.ig,    borderColor:TREND_COLORS.ig,    backgroundColor:TREND_COLORS.ig, borderWidth:2.5, yAxisID:'yIg', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.ig}, common),
+      Object.assign({label:'Youtube 구독자', seriesName:'Youtube(구독자)', data:s.yt,    borderColor:TREND_COLORS.yt,    backgroundColor:TREND_COLORS.yt, borderWidth:2.5, yAxisID:'yYt', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.yt}, common),
+      Object.assign({label:'Instagram 팔로워', seriesName:'Instagram(팔로워)', data:s.ig,    borderColor:TREND_COLORS.ig,    backgroundColor:TREND_COLORS.ig, borderWidth:2.5, yAxisID:'yIg', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.ig}, common),
       Object.assign({label:'HP 뷰', seriesName:'HP(View)', data:s.hpPV,  borderColor:TREND_COLORS.hp,    backgroundColor:TREND_COLORS.hp, borderWidth:2,   yAxisID:'yHp', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.hp}, common),
       Object.assign({label:'HP 방문자', seriesName:'HP(방문자)', data:s.hpV,   borderColor:TREND_COLORS.hp,    backgroundColor:'#fff', borderWidth:2, borderDash:[6,4], yAxisID:'yHp', valueLabelOffset:21, valueLabelColor:TREND_COLORS.hp}, common),
     ]
@@ -1270,7 +1270,7 @@ function refreshTrendChart(){
     callback:(v)=> (r.empty || v < r.dataMin - 1e-9 || v > r.dataMax + 1e-9) ? '' : (r.signed ? fmtSigned(v) : Number(v).toLocaleString())});
   const options = {
     responsive:true, maintainAspectRatio:false, animation:false,
-    layout:{padding:{top:22, bottom:26, left:96, right:24}},
+    layout:{padding:{top:22, bottom:26, left:128, right:24}},
     interaction:{mode:'index', intersect:false},
     plugins:{
       legend:{display:false}, valueLabels:{enabled:true, font:'700 13px -apple-system, sans-serif'},
@@ -1338,7 +1338,7 @@ const pubChipsPlugin = {
 };
 Chart.register(pubChipsPlugin);
 
-/* 화면용(Chart.js) 선 이름 표시: 각 선의 첫 점 왼쪽에 Youtube / Instagram / HP(View) / HP(방문자)를 쓴다.
+/* 화면용(Chart.js) 선 이름 표시: 각 선의 첫 점 왼쪽에 Youtube(구독자) / Instagram(팔로워) / HP(View) / HP(방문자)를 쓴다.
    이름끼리 겹치면 위아래로 살짝 벌려 준다. */
 const seriesNamePlugin = {
   id: 'seriesNamePlugin',
@@ -1357,7 +1357,7 @@ const seriesNamePlugin = {
     for(let i = 1; i < items.length; i++){ if(items[i].y - items[i-1].y < GAP) items[i].y = items[i-1].y + GAP; }
     const {ctx, chartArea} = chart;
     ctx.save();
-    ctx.font = '800 13px -apple-system, sans-serif';
+    ctx.font = '400 13px -apple-system, sans-serif';
     ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     items.forEach(it => { ctx.fillStyle = it.color; ctx.fillText(it.name, chartArea.left - 14, it.y); });
     ctx.restore();
@@ -1369,7 +1369,7 @@ function buildTrendChartSVG(s, R){
   const n = s.dates.length;
   if(!n) return '';
   // 인쇄 폭(약 190mm) 대비 비율에 맞춘 좌표계: 숫자가 종이에서 9~10pt 정도로 보이도록 글씨를 키움
-  const W = 900, H = 330, padTop = 26, padBottom = 52, padLeft = 118, padRight = 30;
+  const W = 900, H = 330, padTop = 26, padBottom = 52, padLeft = 158, padRight = 30;
   const FONT = 15, R_PT = 4;
   const plotH = H - padTop - padBottom;
   const plotW = W - padLeft - padRight;
@@ -1404,8 +1404,8 @@ function buildTrendChartSVG(s, R){
   const series = [
     {vals:s.hpPV,  r:R.hp,    color:TREND_COLORS.hp,    dash:'',    labelDy:-9,      name:'HP(View)'},
     {vals:s.hpV,   r:R.hp,    color:TREND_COLORS.hp,    dash:'6,5', labelDy:FONT+7,  name:'HP(방문자)'},
-    {vals:s.ig,    r:R.ig,    color:TREND_COLORS.ig,    dash:'',    labelDy:-9,      name:'Instagram'},
-    {vals:s.yt,    r:R.yt,    color:TREND_COLORS.yt,    dash:'',    labelDy:-9,      name:'Youtube'},
+    {vals:s.ig,    r:R.ig,    color:TREND_COLORS.ig,    dash:'',    labelDy:-9,      name:'Instagram(팔로워)'},
+    {vals:s.yt,    r:R.yt,    color:TREND_COLORS.yt,    dash:'',    labelDy:-9,      name:'Youtube(구독자)'},
   ];
   // 선 이름: 각 선의 첫 점 높이에 맞춰 왼쪽에 쓴다(겹치면 위아래로 벌림)
   const names = [];
@@ -1416,7 +1416,7 @@ function buildTrendChartSVG(s, R){
   names.sort((a,b) => a.y - b.y);
   for(let i = 1; i < names.length; i++){ if(names[i].y - names[i-1].y < 19) names[i].y = names[i-1].y + 19; }
   names.forEach(nm => {
-    labels += `<text x="${padLeft - 16}" y="${(nm.y + 5).toFixed(1)}" font-size="16" font-weight="800" text-anchor="end" fill="${nm.color}">${nm.name}</text>`;
+    labels += `<text x="${padLeft - 16}" y="${(nm.y + 5).toFixed(1)}" font-size="16" font-weight="400" text-anchor="end" fill="${nm.color}">${nm.name}</text>`;
   });
   series.forEach(se => {
     const pts = se.vals.map((v,i) => v == null ? null : [xOf(i), yOf(v, se.r)]);
