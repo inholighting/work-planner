@@ -229,6 +229,7 @@ table.post-table th.th-ratio{text-align:left;}
 .lg-line{display:inline-block; width:18px; height:0; border-top:2.5px solid; vertical-align:middle; margin-right:4px;}
 .lg-line.dashed{border-top-style:dashed;}
 .daily-input-wrap{margin-top:8px; overflow-x:auto;}
+.hp-paste{margin-top:10px;}
 table.daily-table{width:100%; border-collapse:collapse; font-size:12px; table-layout:fixed; min-width:600px;}
 table.daily-table th{font-weight:400; color:var(--text-light); font-size:11px; padding:4px; border-bottom:1px solid var(--border); text-align:center; white-space:nowrap;}
 table.daily-table th.row-h, table.daily-table td.row-h{text-align:left; width:140px;}
@@ -742,35 +743,17 @@ table.hp-table mark.hp-max-hl{
           <span><span class="lg-line" style="border-top-color:#e53935"></span>홈페이지 뷰</span>
           <span><b class="pub-txt" style="color:#000">L</b>, <b class="pub-txt" style="color:#000">S</b> 발행일 (아래 롱폼, SRC 표 번호)</span>
         </div>
+        <div class="paste-zone no-print hp-paste" id="pasteZone" contenteditable="true" data-placeholder="홈페이지 데이터: 관리자 페이지의 일자별 표를 복사해서 여기를 클릭하고 Ctrl+V(⌘V)로 붙여넣기 (일자·페이지뷰·방문자만 사용)"></div>
         <div class="daily-input-wrap no-print" id="dailyInputWrap"></div>
       </div>
     </div>
   </div>
 
-  <!-- ============ 홈페이지 현황 ============ -->
-  <div class="section section-hp">
-    <div class="section-head collapsible" onclick="toggleSection('hp')">
-      <span class="eyebrow">02</span>
-      <h2>홈페이지 현황</h2>
-      <span class="section-toggle-btn" id="toggle-hp">−</span>
-    </div>
-    <p class="section-desc">관리자 페이지의 일자별 표를 그대로 복사해서 아래에 붙여넣으세요.</p>
-    <div class="section-body" id="body-hp">
-      <div class="card hp-card">
-        <div class="paste-zone no-print" id="pasteZone" contenteditable="true" data-placeholder="여기를 클릭하고 Ctrl+V(⌘V)로 붙여넣기 — 일자 / 주문수 / 매출액 / 전환율 / 페이지뷰 / 방문자 / ... (일자·페이지뷰·방문자만 사용)">
-        </div>
-        <div class="hp-main-row">
-          <div class="hp-stat-row" id="hpStatRow"></div>
-          <div class="hp-table-wrap" id="hpTableWrap"></div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- ============ 콘텐츠 현황 ============ -->
   <div class="section section-content">
     <div class="section-head collapsible" onclick="toggleSection('content')">
-      <span class="eyebrow">03</span>
+      <span class="eyebrow">02</span>
       <h2>콘텐츠 현황</h2>
       <span class="section-toggle-btn" id="toggle-content">−</span>
     </div>
@@ -1993,8 +1976,8 @@ function renderHomepage(){
   const statRow = document.getElementById('hpStatRow');
   const tableWrap = document.getElementById('hpTableWrap');
   if(!rows.length){
-    statRow.innerHTML = '';
-    tableWrap.innerHTML = '';
+    if(statRow) statRow.innerHTML = '';
+    if(tableWrap) tableWrap.innerHTML = '';
     if(hpChart){ hpChart.destroy(); hpChart = null; }
     updateHpHeaderSummary(null, null);
     refreshSummary();
@@ -2004,7 +1987,7 @@ function renderHomepage(){
   const totalV  = rows.reduce((s,r)=>s+r.visitors,0);
   updateHpHeaderSummary(totalPV, totalV);
   const bestDay = rows.reduce((a,b)=> b.pageviews > a.pageviews ? b : a, rows[0]);
-  statRow.innerHTML = `
+  if(statRow) statRow.innerHTML = `
     <div class="hp-stat-group">
       <div class="hp-stat"><label>합계 페이지뷰</label><b>${totalPV.toLocaleString()}</b></div>
       <div class="hp-stat"><label>합계 방문자</label><b>${totalV.toLocaleString()}</b></div>
@@ -2017,7 +2000,7 @@ function renderHomepage(){
   `;
   const maxPVVal = Math.max(...rows.map(r=>r.pageviews));
   const maxVVal  = Math.max(...rows.map(r=>r.visitors));
-  tableWrap.innerHTML = `
+  if(tableWrap) tableWrap.innerHTML = `
     <table class="hp-table">
       <thead><tr><th>일자</th><th>페이지뷰</th><th>방문자</th></tr></thead>
       <tbody>${[...rows].reverse().map(r=>`<tr><td>${r.date}</td><td>${r.pageviews===maxPVVal ? '<mark class="hp-max-hl">'+r.pageviews.toLocaleString()+'</mark>' : r.pageviews.toLocaleString()}</td><td>${r.visitors===maxVVal ? '<mark class="hp-max-hl">'+r.visitors.toLocaleString()+'</mark>' : r.visitors.toLocaleString()}</td></tr>`).join('')}</tbody>
