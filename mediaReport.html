@@ -714,7 +714,7 @@ table.hp-table mark.hp-max-hl{
       </div>
 
       <div class="card chart-box trend-card">
-        <div class="chart-title">일별 추이 · Youtube 구독자 / Instagram 팔로워 / 홈페이지 방문자·뷰</div>
+        <div class="chart-title">주간변화</div>
         <div class="chart-canvas-wrap trend-chart-wrap"><canvas id="chart-trend"></canvas></div><div class="print-mini-chart" id="printchart-trend"></div>
         <div class="legend-row trend-legend">
           <span><b class="pub-txt" style="color:#000">L</b>, <b class="pub-txt" style="color:#000">S</b> 발행일 (아래 롱폼, SRC 표 번호)</span>
@@ -1259,10 +1259,10 @@ function refreshTrendChart(){
   const data = {
     labels: s.labels,
     datasets: [
-      Object.assign({label:'Youtube 구독자', seriesName:'Youtube(구독자)', data:s.yt,    borderColor:TREND_COLORS.yt,    backgroundColor:TREND_COLORS.yt, borderWidth:2.5, yAxisID:'yYt', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.yt}, common),
-      Object.assign({label:'Instagram 팔로워', seriesName:'Instagram(팔로워)', data:s.ig,    borderColor:TREND_COLORS.ig,    backgroundColor:TREND_COLORS.ig, borderWidth:2.5, yAxisID:'yIg', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.ig}, common),
-      Object.assign({label:'HP 뷰', seriesName:'HP(View)', data:s.hpPV,  borderColor:TREND_COLORS.hp,    backgroundColor:TREND_COLORS.hp, borderWidth:2,   yAxisID:'yHp', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.hp}, common),
-      Object.assign({label:'HP 방문자', seriesName:'HP(방문자)', data:s.hpV,   borderColor:TREND_COLORS.hp,    backgroundColor:'#fff', borderWidth:2, borderDash:[6,4], yAxisID:'yHp', valueLabelOffset:21, valueLabelColor:TREND_COLORS.hp}, common),
+      Object.assign({label:'Youtube 구독자', seriesName:'Youtube 구독자', data:s.yt,    borderColor:TREND_COLORS.yt,    backgroundColor:TREND_COLORS.yt, borderWidth:2.5, yAxisID:'yYt', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.yt}, common),
+      Object.assign({label:'Instagram 팔로워', seriesName:'Instagram 팔로워', data:s.ig,    borderColor:TREND_COLORS.ig,    backgroundColor:TREND_COLORS.ig, borderWidth:2.5, yAxisID:'yIg', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.ig}, common),
+      Object.assign({label:'HP 뷰', seriesName:'HP (View)', data:s.hpPV,  borderColor:TREND_COLORS.hp,    backgroundColor:TREND_COLORS.hp, borderWidth:2,   yAxisID:'yHp', valueLabelOffset:-9, valueLabelColor:TREND_COLORS.hp}, common),
+      Object.assign({label:'HP 방문자', seriesName:'HP (방문자)', data:s.hpV,   borderColor:TREND_COLORS.hp,    backgroundColor:'#fff', borderWidth:2, borderDash:[6,4], yAxisID:'yHp', valueLabelOffset:21, valueLabelColor:TREND_COLORS.hp}, common),
     ]
   };
   // 각 축의 눈금은 자기 띠(데이터 범위) 안에서만 표시한다
@@ -1338,7 +1338,7 @@ const pubChipsPlugin = {
 };
 Chart.register(pubChipsPlugin);
 
-/* 화면용(Chart.js) 선 이름 표시: 각 선의 첫 점 왼쪽에 Youtube(구독자) / Instagram(팔로워) / HP(View) / HP(방문자)를 쓴다.
+/* 화면용(Chart.js) 선 이름 표시: 각 선의 첫 점 왼쪽에 Youtube 구독자 / Instagram 팔로워 / HP (View) / HP (방문자)를 쓴다.
    이름끼리 겹치면 위아래로 살짝 벌려 준다. */
 const seriesNamePlugin = {
   id: 'seriesNamePlugin',
@@ -1402,10 +1402,10 @@ function buildTrendChartSVG(s, R){
   let lines = '', labels = '';
   // labelDy: 값 라벨을 점 위(-) 또는 아래(+)에 둔다
   const series = [
-    {vals:s.hpPV,  r:R.hp,    color:TREND_COLORS.hp,    dash:'',    labelDy:-9,      name:'HP(View)'},
-    {vals:s.hpV,   r:R.hp,    color:TREND_COLORS.hp,    dash:'6,5', labelDy:FONT+7,  name:'HP(방문자)'},
-    {vals:s.ig,    r:R.ig,    color:TREND_COLORS.ig,    dash:'',    labelDy:-9,      name:'Instagram(팔로워)'},
-    {vals:s.yt,    r:R.yt,    color:TREND_COLORS.yt,    dash:'',    labelDy:-9,      name:'Youtube(구독자)'},
+    {vals:s.hpPV,  r:R.hp,    color:TREND_COLORS.hp,    dash:'',    labelDy:-9,      name:'HP (View)'},
+    {vals:s.hpV,   r:R.hp,    color:TREND_COLORS.hp,    dash:'6,5', labelDy:FONT+7,  name:'HP (방문자)'},
+    {vals:s.ig,    r:R.ig,    color:TREND_COLORS.ig,    dash:'',    labelDy:-9,      name:'Instagram 팔로워'},
+    {vals:s.yt,    r:R.yt,    color:TREND_COLORS.yt,    dash:'',    labelDy:-9,      name:'Youtube 구독자'},
   ];
   // 선 이름: 각 선의 첫 점 높이에 맞춰 왼쪽에 쓴다(겹치면 위아래로 벌림)
   const names = [];
