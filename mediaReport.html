@@ -738,7 +738,7 @@ table.hp-table mark.hp-max-hl{
           <span><span class="lg-line" style="border-top-color:#4fb3f6"></span>Instagram 팔로워</span>
           <span><span class="lg-line dashed" style="border-top-color:#e53935"></span>홈페이지 방문자</span>
           <span><span class="lg-line" style="border-top-color:#e53935"></span>홈페이지 뷰</span>
-          <span><span class="pub-chip" style="background:#ff0000">롱1</span><span class="pub-chip" style="background:#f2994a">S1</span>발행일 (아래 롱폼·SRC 표 번호)</span>
+          <span><span class="pub-chip" style="background:#ff0000">L1</span><span class="pub-chip" style="background:#f2994a">S1</span>발행일 (아래 롱폼·SRC 표 번호)</span>
         </div>
         <div class="daily-input-wrap no-print" id="dailyInputWrap"></div>
       </div>
@@ -1311,11 +1311,11 @@ function refreshTrendChart(){
   if(printEl) printEl.innerHTML = buildTrendChartSVG(s, {yt:rYt, ig:rIg, hp:rHp});
 }
 
-/* 날짜별 롱폼·SRC 발행 표시: 아래 콘텐츠 표의 행 번호와 같은 번호를 붙인다 (롱폼 1번 → "롱1", SRC 3번 → "S3") */
+/* 날짜별 롱폼·SRC 발행 표시: 아래 콘텐츠 표의 행 번호와 같은 번호를 붙인다 (롱폼 1번 → "L1", SRC 3번 → "S3") */
 function pubChipsByDate(dates){
   const out = dates.map(() => []);
   const idx = {}; dates.forEach((d,i) => idx[d] = i);
-  [['longform','롱'], ['shorts','S']].forEach(([key, prefix]) => {
+  [['longform','L'], ['shorts','S']].forEach(([key, prefix]) => {
     (state.posts[key] || []).forEach((p, k) => {
       if(!p.date || idx[p.date] === undefined) return;
       if(!(p.title || p.ytViews || p.igViews)) return;
