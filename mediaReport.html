@@ -226,7 +226,7 @@ table.post-table th.th-ratio{text-align:left;}
 .daily-input-wrap + .trend-insights{margin-top:12px;}
 .trend-insights .chart-title{margin-bottom:2px;}
 .trend-insights .insight-list{margin-top:4px;}
-.pub-chip{display:inline-block; color:#fff; font-size:10px; font-weight:700; line-height:1; padding:3px 5px; border-radius:4px; margin-right:3px; vertical-align:middle;}
+.pub-txt{font-weight:800;}
 .lg-line{display:inline-block; width:18px; height:0; border-top:2.5px solid; vertical-align:middle; margin-right:4px;}
 .lg-line.dashed{border-top-style:dashed;}
 .daily-input-wrap{margin-top:8px; overflow-x:auto;}
@@ -578,7 +578,6 @@ table.hp-table mark.hp-max-hl{
   .trend-insights .insight-list{margin-top:2px !important;}
   .trend-card .chart-title{font-size:12.5px; font-weight:700; color:#000; margin-bottom:1px; flex:0 0 auto;}
   .trend-card .legend-row{margin-top:0; font-size:10.5px; flex:0 0 auto;}
-  .trend-card .pub-chip{font-size:9px; padding:2px 4px;}
   .post-card{padding:3px 8px !important;}
   .post-table-wrap{margin-bottom:2px;}
 
@@ -742,7 +741,7 @@ table.hp-table mark.hp-max-hl{
           <span><span class="lg-line" style="border-top-color:#4fb3f6"></span>Instagram 팔로워</span>
           <span><span class="lg-line dashed" style="border-top-color:#e53935"></span>홈페이지 방문자</span>
           <span><span class="lg-line" style="border-top-color:#e53935"></span>홈페이지 뷰</span>
-          <span><span class="pub-chip" style="background:#ff0000">L1</span><span class="pub-chip" style="background:#f2994a">S1</span>발행일 (아래 롱폼·SRC 표 번호)</span>
+          <span><b class="pub-txt" style="color:#ff0000">L</b>, <b class="pub-txt" style="color:#f2994a">S</b> 발행일 (아래 롱폼, SRC 표 번호)</span>
         </div>
         <div class="daily-input-wrap no-print" id="dailyInputWrap"></div>
       </div>
@@ -1349,32 +1348,28 @@ function pubChipsByDate(dates){
   return out;
 }
 
-/* 화면용(Chart.js) 발행 표시 플러그인: x축 날짜 아래에 칩을 그린다 */
+/* 화면용(Chart.js) 발행 표시 플러그인: x축 날짜 아래에 L1·S1을 콘텐츠 색 굵은 글씨로 그린다 */
 const pubChipsPlugin = {
   id: 'pubChipsPlugin',
   afterDraw(chart){
     const chips = chart.$pubChips;
     if(!chips || !chart.scales.x) return;
     const {ctx} = chart; const xs = chart.scales.x;
-    const y = xs.bottom + 4, h = 18;
+    const y = xs.bottom + 13;
     ctx.save();
-    ctx.font = '700 11px -apple-system, sans-serif';
+    ctx.font = '800 13px -apple-system, sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     chips.forEach((list, i) => {
       if(!list.length) return;
       const cx = xs.getPixelForValue(i);
-      const widths = list.map(c => ctx.measureText(c.text).width + 10);
-      const total = widths.reduce((a,b)=>a+b,0) + (list.length-1)*3;
+      const gap = 8;
+      const widths = list.map(c => ctx.measureText(c.text).width);
+      const total = widths.reduce((a,b)=>a+b,0) + (list.length-1)*gap;
       let x = cx - total/2;
       list.forEach((c, j) => {
-        const w = widths[j];
         ctx.fillStyle = c.color;
-        ctx.beginPath();
-        if(ctx.roundRect) ctx.roundRect(x, y, w, h, 4); else ctx.rect(x, y, w, h);
-        ctx.fill();
-        ctx.fillStyle = '#fff';
-        ctx.fillText(c.text, x + w/2, y + h/2 + 0.5);
-        x += w + 3;
+        ctx.fillText(c.text, x + widths[j]/2, y);
+        x += widths[j] + gap;
       });
     });
     ctx.restore();
@@ -1399,18 +1394,18 @@ function buildTrendChartSVG(s, R){
   for(let i=0;i<n;i++){
     grid += `<line x1="${xOf(i).toFixed(1)}" y1="${padTop}" x2="${xOf(i).toFixed(1)}" y2="${padTop+plotH}" stroke="#eee" stroke-width="1"/>`;
     grid += `<text x="${xOf(i).toFixed(1)}" y="${padTop+plotH+18}" font-size="14" text-anchor="middle" fill="#333">${s.labels[i]}</text>`;
-    // 발행 칩
+    // 발행 표시(L1·S1): 콘텐츠 색 굵은 글씨
     const list = chips[i];
     if(list.length){
-      const cw = (t) => t.length * 9 + 14;
-      const total = list.reduce((a,c)=>a+cw(c.text),0) + (list.length-1)*4;
+      const cw = (t) => t.length * 10.5;
+      const gap = 10;
+      const total = list.reduce((a,c)=>a+cw(c.text),0) + (list.length-1)*gap;
       let x = xOf(i) - total/2;
-      const y = padTop + plotH + 26;
+      const y = padTop + plotH + 41;
       list.forEach(c => {
         const w = cw(c.text);
-        grid += `<rect x="${x.toFixed(1)}" y="${y}" width="${w}" height="21" rx="5" fill="${c.color}"/>`;
-        grid += `<text x="${(x + w/2).toFixed(1)}" y="${y + 15.5}" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">${c.text}</text>`;
-        x += w + 4;
+        grid += `<text x="${(x + w/2).toFixed(1)}" y="${y}" font-size="16" font-weight="800" text-anchor="middle" fill="${c.color}">${c.text}</text>`;
+        x += w + gap;
       });
     }
   }
